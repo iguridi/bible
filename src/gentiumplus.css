@@ -1,16 +1,6 @@
 *	{margin:0;padding:0}
-html,body	{height:100%;font-size:1.2em;line-height:1.4em;color:black}
-/* Note: if the following 2 .woff files are in another location, please edit the two url() specifiers, below. */
-@font-face {
-    font-family: 'gentiumw';
-    src: url('fonts/gentium_plus.eot');
-    src: url('fonts/gentium_plus.eot?#iefix') format('embedded-opentype'),
-         url('fonts/gentium_plus.woff') format('woff'),
-         url('fonts/gentium_plus.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
-}
-html,body	{font-family: 'gentiumw','Gentium Plus','Gentium','Gentium Basic','Times','serif';}
+html,body	{height:100%;font-size:1.1em;line-height:1.4em;color:black}
+html,body	{font-family: 'Lucida Grande','Times','serif';}
 h1 { font-weight: normal; }
 .main	{min-height:100%;margin-bottom:-4em;padding:0.5em}
 .main:after	{content:"";display:block}
