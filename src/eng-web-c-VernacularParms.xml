@@ -219,21 +219,6 @@
   <scriptureBook ubsAbbreviation="3JN" parm="vernacularBookAbbreviation">3Jn</scriptureBook>
   <scriptureBook ubsAbbreviation="JUD" parm="vernacularBookAbbreviation">Jud</scriptureBook>
   <scriptureBook ubsAbbreviation="REV" parm="vernacularBookAbbreviation">Rev</scriptureBook>
-  <dcMeta xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://dublincore.org/schemas/xmls/qdc/2008/02/11/dc.xsd" xmlns:dc="http://purl.org/dc/elements/1.1/">
-    <dc:creator>eBible.org</dc:creator>
-    <dc:contributor />
-    <dc:title>World English Bible (Catholic)</dc:title>
-    <dc:description>The World English Bible with Catholic Book Order</dc:description>
-    <dc:date>2024-01-27</dc:date>
-    <dc:format>digital</dc:format>
-    <dc:language>eng</dc:language>
-    <dc:publisher>eBible.org</dc:publisher>
-    <dc:rights>Public DomainThe World English Bible is in the Public Domain. You may copy it freely. "World English Bible" is a trademark that may only be used to refer to faithful copies of the text of the World English Bible as distributed from http://eBible.org.
-This public domain Bible translation is brought to you courtesy of eBible.org.
-If you would like to make a donation to help keep free Bible access like this going, please visit &lt;a href="https://eBible.org/give.php"&gt;https://eBible.org/give.php&lt;/a&gt;.</dc:rights>
-    <dc:identifier />
-    <dc:type />
-  </dcMeta>
   <numberSystem>Default</numberSystem>
   <chapterAndVerseSeparator>:</chapterAndVerseSeparator>
   <rangeSeparator>-</rangeSeparator>
@@ -250,5 +235,5 @@ If you would like to make a donation to help keep free Bible access like this go
   <langName>English</langName>
   <textDir>ltr</textDir>
   <hasNotes>True</hasNotes>
-  <coverTitle>World English Bible (Catholic)</coverTitle>
+  <coverTitle>Catholic English Bible</coverTitle>
 </vernacularParms>
