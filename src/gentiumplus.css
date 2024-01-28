@@ -141,7 +141,7 @@ html[dir=rtl] .q3	{text-indent:-1em; margin-right:3em}
 .footnote,
 .crossRefNote	{display: block; margin-top:.5em;margin-left:0em}
 .notebackref	{margin: 1em}
-.fine,.copyright,.figcopr	{font-size:10pt;color:#333333}
+.fine	{font-size:10pt;color:#333333}
 .figref	{font-style:italic;font-size:10pt;color:#000040}
 .figCaption	{font-size:11pt;color:#000040}
 ul.tnav	{list-style-type:none;text-align:center}
