@@ -31,10 +31,6 @@ ul.cmenu li.dis a {color:#666 !important}
 ul.cmenu a:hover ul,ul.cmenu a:hover a:hover ul{display:block}
 ul.cmenu a:hover ul ul{display:none}
 ul.cmenu span{display:block;background-position:right center;background-repeat: no-repeat;padding-right:12px}
-a.xx	{background-color:#333333 !important}
-a.nn	{background-color:#202050 !important}
-a.oo	{background-color:#205030 !important}
-a.aa	{background-color:#333300 !important}
 html[dir=rtl] body	{text-align:right;direction:rtl}
 span[id^="V"] { display: none}
 span.add	{font-style:italic}
@@ -90,7 +86,7 @@ span.add	{font-style:italic}
 .li2,.ph2,.phi,.li3,.ph3	{display:list-item;list-style-type:none;text-indent:4em}
 .li3,.ph3	{text-indent:12em}
 .m	{margin-top:0}
-.mainindex	{background:rgb(240,255,244);max-width:40em}
+.mainindex	{background:rgb(240,255,244); padding: 8px; font-size: 0.9rem}
 .mi	{text-indent:2em;margin-top:0}
 .mr	{display:block;margin:.5em 0 .5em 0;text-align:center;text-indent:2em}
 .ms2,.ms3	{font-weight:bold;display:block;margin:.5em 0 .5em 0;text-align:center;text-indent:2em}
