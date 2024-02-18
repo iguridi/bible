@@ -138,8 +138,7 @@ html[dir=rtl] .q3	{text-indent:-1em; margin-right:3em}
 .q1 .chapter .q2 .chapter,
 .q3 .chapter, .poetry .chapter	{margin-right:1em}
 .verse	{white-space:nowrap;vertical-align:super;font-size:.6em;line-height:0}
-.footnote,
-.crossRefNote	{display: block; margin-top:.5em;margin-left:0em}
+.footnote,.crossRefNote	{display: block; margin-top:.5em;margin-left:0em}
 .notebackref	{margin: 1em}
 .fine	{font-size:10pt;color:#333333}
 .figref	{font-style:italic;font-size:10pt;color:#000040}
