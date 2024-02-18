@@ -1,7 +1,7 @@
 /* *	{margin:0 auto;padding:0} */
 html,body	{height:100%;font-size:1.2rem;line-height:1.4em;color:black}
 html,body	{font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,'Times','serif';}
-html,body	{max-width:900px;text-align:justify;background-color: rgb( 236, 233, 230);color: rgb(  27, 39, 51);}
+html,body	{max-width:900px;text-align:justify;background-color: #ece9e6;color: rgb(  27, 39, 51);}
 html,body {margin: 0 auto}
 h1 { font-weight: normal; }
 .main	{min-height:100%;margin-bottom:-4em;padding:0.5em}
