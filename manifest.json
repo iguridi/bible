@@ -10,21 +10,5 @@
     "icons": [
     ],
     "screenshots": [
-        {
-          "src": "/lofimaker/screenshot1.jpg",
-          "type": "image/jpeg"
-        },
-        {
-          "src": "/lofimaker/screenshot2.jpg",
-          "type": "image/jpeg"
-        },
-        {
-          "src": "/lofimaker/screenshot3.jpg",
-          "type": "image/jpeg"
-        },
-        {
-          "src": "/lofimaker/screenshot4.jpg",
-          "type": "image/jpeg"
-        }
       ]
 }
