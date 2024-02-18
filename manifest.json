@@ -1,0 +1,30 @@
+{
+    "theme_color": "#9013fe",
+    "background_color": "#9013fe",
+    "display": "standalone",
+    "scope": "/bible/",
+    "start_url": "/bible/",
+    "name": "Catholic bible",
+    "short_name": "Bible",
+    "description": "No fuzz catholic bible",
+    "icons": [
+    ],
+    "screenshots": [
+        {
+          "src": "/lofimaker/screenshot1.jpg",
+          "type": "image/jpeg"
+        },
+        {
+          "src": "/lofimaker/screenshot2.jpg",
+          "type": "image/jpeg"
+        },
+        {
+          "src": "/lofimaker/screenshot3.jpg",
+          "type": "image/jpeg"
+        },
+        {
+          "src": "/lofimaker/screenshot4.jpg",
+          "type": "image/jpeg"
+        }
+      ]
+}
