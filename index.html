@@ -6,6 +6,17 @@
 <title></title>
 <link href='src/gentiumplus.css' rel='stylesheet' />
 <link href='manifest.json' rel='manifest' />
+<script>
+    // pwa stuff
+    if (navigator.serviceWorker) {
+      navigator.serviceWorker.register (
+        '/github-page-pwa/sw.js',
+        {scope: '/github-page-pwa/'}
+      )
+      .then(res => console.log('service worked registered'))
+      .catch(err => console.log('service worker not registered', err))
+    }
+</script>
 </head>
 <body>
 <h1>Catholic English Bible</h1>
