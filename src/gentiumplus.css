@@ -1,7 +1,9 @@
 /* *	{margin:0 auto;padding:0} */
-html,body	{height:100%;font-size:1.2rem;line-height:1.4em;color:black}
-html,body	{font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,'Times','serif';}
-html,body	{max-width:900px;text-align:justify;background-color: #ece9e6;color: rgb(  27, 39, 51);}
+html {font-size: 11px}
+html {height:100%;font-size:1.3rem;line-height:1.4;color:black}
+html {font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";}
+html {max-width:900px;background-color: rgb(27, 39, 51);color:#ece9e6;}
+html {-webkit-text-size-adjust: 100%}
 html,body {margin: 0 auto}
 h1 { font-weight: normal; }
 .main	{min-height:100%;margin-bottom:-4em;padding:0.5em}
@@ -59,7 +61,7 @@ span.add	{font-style:italic}
 .fv	{color:maroon}
 .glo	{font-weight:bold;text-indent:2em}
 .ib,.idx,.ie,.iex,.intro,.ip,.ili,.ili1,.io,.io1,.io2,.io3,.io4,.io,.io1,.io2,.io3,.io4,.im,.imi,.imq,.imt,.imt1,.imt2,.imt3,.imte,.iot,.ipr,.iq,.iq1,.iq2,.iq3,
-.is,.is1,.is2,.is3,.notebackref,.f,.x,.notemark	{color:blue;font-size:14pt}
+.is,.is1,.is2,.is3,.notebackref,.f,.x,.notemark	{color: #ece9e6 ;font-size:14pt}
 .ib,.idx,.ie,.iex,.intro,.ip,.zp	{margin:.5em 0 .5em 0;text-indent:2em;display:block}
 .ili,.ili1,.io,.io1,.io2,.io3,.io4	{margin:.5em 0 .5em 2em;list-style-type:square;display:list-item}
 .io,.io1,.io2,.io3,.io4	{list-style-type:none}
