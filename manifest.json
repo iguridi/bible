@@ -1,6 +1,6 @@
 {
-  "theme_color": "#ece9e6",
-  "background_color": "#ece9e6",
+  "theme_color": "#1b2733",
+  "background_color": "#1b2733",
   "display": "standalone",
   "scope": "/bible",
   "start_url": "/bible",
