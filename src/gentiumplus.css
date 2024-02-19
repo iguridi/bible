@@ -105,7 +105,7 @@ h1,h2,h3,.mt,.mt1,.mte,
 .qt	{font-style:oblique}
 .ord	{vertical-align:super;text-decoration:underline}
 .nb, .ps { text-indent: 0em; margin-top: 0em }
-.p,.p1,.pb,.pde,.pdi	{text-indent:2em;margin-top:.5em}
+.p,.p1,.pb,.pde,.pdi	{margin-top:2em}
 .p,.nb	{display:block;font-size:1em}
 .pc	{margin-top:.5em;text-align:center}
 .pm,.pmo,.pmc,.psi,.pi,.pi1,.pi2,.pi3,
