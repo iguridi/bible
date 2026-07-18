@@ -1,0 +1,15 @@
+{
+  "name": "bible-offline-archive",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Douay-Rheims offline PWA archive (gzip precincts + service worker).",
+  "scripts": {
+    "build": "node build-archive.js",
+    "test": "node e2e/run-all.mjs",
+    "test:build": "node e2e/build.test.mjs",
+    "test:e2e": "node e2e/sw.test.mjs"
+  },
+  "devDependencies": {
+    "playwright": "1.61.1"
+  }
+}

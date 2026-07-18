@@ -1,0 +1,5 @@
+node_modules/
+# Playwright browser cache / install artifacts
+/Library/Caches/ms-playwright/
+*.log
+pbcopy
