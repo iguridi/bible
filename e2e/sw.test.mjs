@@ -145,7 +145,7 @@ await test('strict order: precinct beats standalone for a chapter', async () => 
     await waitForAllPrecincts(page, ORIGIN);
     // Manually plant a standalone copy of PSA023 so both caches hold it.
     await page.evaluate(async () => {
-      const cache = await caches.open('standalone_v1');
+      const cache = await caches.keys().then(ks => caches.open(ks.find(k => k.startsWith('standalone_'))));
       const res = await fetch(`${location.origin}/src/PSA023.htm`);
       await cache.put(`${location.origin}/src/PSA023.htm`, res);
     });
@@ -170,7 +170,8 @@ await test('resume: missing precinct is re-fetched on next navigation', async ()
     // Delete part_05 from the archive cache.
     const target = partUrlOnPage(5, ORIGIN);
     const deleted = await page.evaluate(async (url) => {
-      const cache = await caches.open('archive_v1');
+      const keys = await caches.keys();
+      const cache = await caches.open(keys.find(k => k.startsWith('archive_')));
       return cache.delete(url);
     }, target);
     assert(deleted, 'delete part_05');
