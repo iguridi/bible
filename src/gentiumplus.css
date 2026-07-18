@@ -1,107 +1,373 @@
-html {height:100%;font-size:1.3rem;line-height:1.4;color:black}
-html {font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";}
-html {-webkit-text-size-adjust: 100%}
-html,body {margin: 0 auto}
+/* ============================================================
+   Douay-Rheims offline PWA — Catppuccin Mocha + minimalist restyle
+   Palette: https://catppuccin.com (Mocha)
+   Body: serif for long-form reading. UI: system sans.
+   ============================================================ */
+
 :root {
-  --bg: #1b2733;
-  --panel: #243340;
-  --panel-2: #2a3744;
-  --text: #ece9e6;
-  --muted: #b8b0a4;
-  --accent: #c9a86a;   /* warm gold */
-  --accent-ot: #6f8db5;/* muted blue */
-  --accent-nt: #c9a86a;/* gold */
-  --link: #8fb3d9;     /* readable cool blue for inline links */
-  --border: #3a4856;
+  /* Catppuccin Mocha */
+  --base:      #1e1e2e;  /* page background */
+  --mantle:    #181825;  /* header / footer bars */
+  --crust:     #11111b;  /* deepest surface */
+  --surface0:  #313244;  /* cards / panels */
+  --surface1:  #45475a;  /* buttons / hover surface */
+  --surface2:  #585b70;  /* active / pressed */
+  --overlay0:  #6c7086;  /* borders, dividers (used w/ alpha) */
+  --overlay1:  #7f849c;  /* tertiary text, verse numbers */
+  --overlay2:  #9399b2;
+  --subtext0:  #a6adc8;  /* secondary text */
+  --subtext1:  #bac2de;
+  --text:      #cdd6f4;  /* primary text */
+
+  /* Accents */
+  --lavender:  #b4befe;  /* primary accent: focus, selection */
+  --mauve:     #cba6f7;  /* OT accent */
+  --teal:      #94e2d5;  /* NT accent */
+  --blue:      #89b4fa;  /* links */
+  --sapphire:  #74c7ec;  /* visited links */
+  --rosewater: #f5e0dc;
+  --green:     #a6e3a1;
+  --peach:     #fab387;
+
+  /* Semantic aliases */
+  --bg:        var(--base);
+  --panel:     var(--surface0);
+  --panel-2:   var(--surface1);
+  --text-main: var(--text);
+  --muted:     var(--subtext0);
+  --tertiary:  var(--overlay1);
+  --accent:    var(--lavender);
+  --accent-ot: var(--mauve);
+  --accent-nt: var(--teal);
+  --link:      var(--blue);
+  --border:    rgba(108, 112, 134, 0.28); /* overlay0 @ ~28% */
+  --border-strong: rgba(108, 112, 134, 0.55);
+
+  /* Typography */
+  --ui-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+             Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  --reading-font: "Source Serif 4", "Iowan Old Style", "Charter", Georgia,
+                  "Times New Roman", serif;
+
+  /* Rhythm (8px grid) */
+  --radius-card: 16px;
+  --radius-pill: 8px;
+  --gap: 32px;
 }
-body {max-width:700px;background-color: var(--bg);color:var(--text);}
+
+/* ---------- Reset / base ---------- */
+html {
+  height: 100%;
+  font-size: 17px;
+  line-height: 1.5;
+  color: var(--text-main);
+  font-family: var(--ui-font);
+  -webkit-text-size-adjust: 100%;
+  background: var(--bg);
+}
+html, body { margin: 0 auto; }
+body {
+  max-width: 720px;
+  background-color: var(--bg);
+  color: var(--text-main);
+  padding: 0 16px;
+  font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* ---------- Headings ---------- */
 h1 {
+  font-family: var(--ui-font);
   font-weight: 600;
-  color: var(--accent);
-  letter-spacing: 0.02em;
-  padding: 0.4em 0 0.2em;
-  border-bottom: 1px solid var(--border);
-  margin: 0 0 0.6em;
+  font-size: 1.25rem;
+  letter-spacing: -0.005em;
+  color: var(--subtext1);
+  margin: 0;
+  padding: 28px 0 20px;
 }
-li	{list-style:disc inside}
-li::marker { color: var(--accent); }
+h1, h2, h3, .mt, .mt2, .mt3 { font-weight: 600; text-align: center; }
+h2 {
+  font-weight: 500;
+  font-size: 0.95rem;
+  color: var(--muted);
+  margin: 6px 0 0;
+}
+.mt  { font-size: 1.5rem; color: var(--text-main); letter-spacing: -0.01em; }
+.mt2 { font-size: 0.85rem; color: var(--tertiary); font-weight: 400;
+       text-transform: uppercase; letter-spacing: 0.08em; }
+.mt3 { font-size: 0.85rem; color: var(--tertiary); font-weight: 400;
+       text-transform: uppercase; letter-spacing: 0.08em; }
 
-.main	{min-height:100%;margin-bottom:-4em;padding:0.8em 1em;background:var(--panel);border:1px solid var(--border);border-radius:6px;margin:0.6em 0}
-.main:after	{content:"";display:block;clear:both}
-/* The copyright page nests a .main inside .main; don't double-panel it. */
-.main > .main { background: transparent; border: none; border-radius: 0; padding: 0; margin: 0; }
-
-h1,h2,h3,.mt,.mt2,.mt3	{font-weight:bold;font-size:1.2em;text-align:center}
-h2 { color: var(--muted); font-weight: normal; font-size: 1em; margin: 0.4em 0 0.8em; }
-.mt	{font-size:1.4em;color:var(--accent)}
-.mt2	{font-size:1.2em;color:var(--muted);font-weight:normal}
-.mt3	{color:var(--muted);font-weight:normal}
-
-.p	{display:block;font-size:1em}
-.q	{margin-top:0pt}
-
-.toc	{display:block;font-size:1em;margin-left:1em;margin-right:1em}
-.chapterlabel	{text-align:center;margin-top:1em;margin-bottom:0.4em;font-size:1.3em;font-weight:bold;color:var(--accent);border-bottom:1px solid var(--border);padding-bottom:0.3em}
-.verse	{white-space:normal; display:block; margin-top: 0.6em; line-height: 1.6; font-weight: 500; }
-.verse:first-child { margin-top: 0; }
-.p	{display:block;font-size:1em;line-height:1.6;text-indent:0;margin-bottom:0.2em}
-.footnote	{display: block; margin-top:1.2em;margin-left:0em}
-.footnote hr { border: none; border-top: 1px solid var(--border); height: 0; margin: 0; }
-.copyright { text-align:center; margin-top:1em; font-size:0.85em; color:var(--muted) }
-.fine	{font-size:10pt;color:var(--muted)}
-.mainindex	{background:var(--panel-2); padding: 12px 14px; font-size: 0.9rem; border:1px solid var(--border); border-top:3px solid var(--accent); border-radius:6px; margin-top:1.2em}
-.mainindex a, .mainindex a:link { color: var(--link); text-decoration: none; }
-.mainindex a:visited { color: #b39ad9; }
-.mainindex a:hover, .mainindex a:focus { color: #fff; text-decoration: underline; }
-
-ul.tnav	{list-style-type:none;text-align:center;margin:0.6em 0;padding-left:0}
-.tnav li	{display:inline}
-.tnav a, .tnav a:link	{display:inline-block; padding:3px 9px;background:var(--panel-2);text-decoration:none;color:var(--text);border:1px solid var(--border);border-radius:5px;min-width:1.5em;font-size:0.9em}
-.tnav a:visited	{color:var(--text)}
-.tnav a:hover	{color:var(--accent);border-color:var(--accent);background:var(--bg)}
-.tnav a:focus	{outline:2px solid var(--accent);outline-offset:1px}
-/* The active/current chapter number link (points to its own page) */
-.tnav a[href]:not([href='']) { }
-
-a.oo, a.aa, a.nn { color: var(--text); text-decoration: none; padding: 1px 0; }
-a.oo:hover, a.aa:hover, a.nn:hover { color: var(--accent); }
-a.oo:focus, a.aa:focus, a.nn:focus { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
-a.oo:visited, a.aa:visited, a.nn:visited { color: var(--text); }
-
-/* ---- Subpage link theming ---- */
-/* Generic inline links inside .main (copyright page body links: "Go!",
-   "Public Domain", eBible.org, Haiola, etc.). :where() keeps specificity at
-   (0,0,1) so the targeted rules below (.tnav, .copyright, h1, .oo/.aa/.nn)
-   always win. */
-:where(.main) a:link { color: var(--link); text-decoration: none; }
-:where(.main) a:visited { color: #b39ad9; }
-:where(.main) a:hover, :where(.main) a:focus { color: #fff; text-decoration: underline; }
-/* The centered "Public Domain" link at chapter foot is small/muted. */
-.copyright a, .copyright a:link, .copyright a:visited { color: var(--muted); text-decoration: none; }
-.copyright a:hover, .copyright a:focus { color: var(--accent); text-decoration: underline; }
-/* h1 links (book-list page titles, chapter page titles) inherit the gold h1. */
-h1 a, h1 a:link, h1 a:visited { color: inherit; text-decoration: none; }
-h1 a:hover, h1 a:focus { color: #fff; text-decoration: underline; }
-
-/* Index page book list panel */
-body > div > ul {
+/* ---------- Main reading card ---------- */
+.main {
+  min-height: 100%;
+  margin: 16px 0;
+  padding: 28px 28px;
   background: var(--panel);
   border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 0.6em 0.8em;
+  border-radius: var(--radius-card);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.18);
+}
+.main:after { content: ""; display: block; clear: both; }
+/* The copyright page nests a .main inside .main; don't double-panel it. */
+.main > .main {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 0;
+  margin: 0;
 }
 
-/* Old / New Testament section dividers in the book list */
+/* ---------- Chapter heading ---------- */
+.chapterlabel {
+  text-align: center;
+  margin: 28px 0 20px;
+  padding-bottom: 16px;
+  font-family: var(--ui-font);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--tertiary);
+  border-bottom: 1px solid var(--border);
+}
+.chapterlabel:first-child { margin-top: 12px; }
+.chapterlabel::before { content: "Chapter "; color: var(--overlay0); }
+
+/* ---------- Verses: one paragraph per verse ----------
+ * Structure: <div class="p"><span class="verse" id="V1">1 </span>text...
+ *   <span class="verse" id="V2">2 </span>text...</div>
+ * Each .verse is display:block so the verse number starts a new line and
+ * the verse text wraps beneath it — one paragraph per verse. The number
+ * is a small, muted, tabular marker that leads the paragraph (not a loud
+ * gold ladder). Kept as the user's preferred block-per-verse layout.
+ */
+.p {
+  display: block;
+  font-family: var(--reading-font);
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: var(--text-main);
+  margin: 0 0 4px;
+}
+.verse {
+  display: block;
+  margin-top: 0.7em;
+  font-family: var(--ui-font);
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--tertiary);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+}
+.verse:first-child { margin-top: 0; }
+.p:after { content: ""; display: block; clear: both; }
+
+.q { margin-top: 0; }
+
+/* ---------- Footnotes ---------- */
+.footnote { display: block; margin-top: 24px; margin-left: 0; }
+.footnote hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  height: 0;
+  margin: 0 0 16px;
+}
+.copyright {
+  text-align: center;
+  margin-top: 24px;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.fine { font-size: 0.82rem; line-height: 1.6; color: var(--subtext0); }
+
+/* Copyright-page metadata: label is muted+medium, value is primary text,
+ * so the eye can scan labels down the left and read values beside them. */
+.meta-label { color: var(--tertiary); font-weight: 500; }
+.meta p { line-height: 1.9; color: var(--subtext1); }
+
+/* ---------- Top / bottom chapter nav (tnav) ---------- */
+ul.tnav {
+  list-style-type: none;
+  text-align: center;
+  margin: 4px 0 16px;
+  padding: 0;
+}
+.tnav li { display: inline; }
+.tnav a, .tnav a:link {
+  display: inline-block;
+  padding: 6px 12px;
+  background: var(--panel-2);
+  text-decoration: none;
+  color: var(--subtext1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  min-width: 1.75em;
+  font-size: 0.82rem;
+  font-family: var(--ui-font);
+  transition: background 120ms ease, color 120ms ease,
+              border-color 120ms ease;
+}
+.tnav a:visited { color: var(--subtext1); }
+.tnav a:hover {
+  color: var(--text-main);
+  border-color: var(--border-strong);
+  background: var(--surface2);
+}
+.tnav a:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* The current chapter number is always the 3rd pill on a chapter page
+ * (1st = book name, 2nd = prev, 3rd = current, 4th = next). Only chapter
+ * pages have a book-name link as the first child, so :has() scopes this to
+ * them and leaves book-TOC pages (GEN.htm) untouched. */
+ul.tnav:has(> li:first-child a[href$="index.html"]) > li:nth-child(3) > a {
+  color: var(--accent);
+  border-color: rgba(180, 190, 254, 0.55);
+  background: rgba(180, 190, 254, 0.12);
+  font-weight: 600;
+}
+
+/* ---------- Book-list links (index page) ---------- */
+a.oo, a.aa, a.nn {
+  color: var(--text-main);
+  text-decoration: none;
+  padding: 1px 0;
+  transition: color 120ms ease;
+}
+a.oo:hover, a.aa:hover, a.nn:hover { color: var(--accent); }
+a.oo:focus, a.aa:focus, a.nn:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+a.oo:visited, a.aa:visited, a.nn:visited { color: var(--text-main); }
+/* Subtle OT/NT hue on hover only, so default stays calm & uniform. */
+a.oo:hover { color: var(--accent-ot); }
+a.nn:hover { color: var(--accent-nt); }
+
+/* ---------- Inline links inside .main (copyright page body) ---------- */
+/* :where() keeps specificity at (0,0,1) so targeted rules below win. */
+:where(.main) a:link { color: var(--link); text-decoration: underline;
+  text-decoration-color: rgba(137, 180, 250, 0.4); text-underline-offset: 2px; }
+:where(.main) a:visited { color: var(--sapphire); text-decoration-color: rgba(116, 199, 236, 0.4); }
+:where(.main) a:hover, :where(.main) a:focus {
+  color: var(--rosewater);
+  text-decoration-color: var(--rosewater);
+}
+.copyright a, .copyright a:link, .copyright a:visited {
+  color: var(--muted);
+  text-decoration: none;
+}
+.copyright a:hover, .copyright a:focus {
+  color: var(--accent);
+  text-decoration: underline;
+}
+h1 a, h1 a:link, h1 a:visited { color: inherit; text-decoration: none; }
+h1 a:hover, h1 a:focus { color: var(--accent); text-decoration: underline; }
+
+/* ---------- Index page ---------- */
+/* Remove default disc bullets from the book list. */
+body > div > ul {
+  list-style: none;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  padding: 8px;
+  margin: 16px 0;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.18);
+}
+body > div > ul li { list-style: none; }
+body > div > ul li::marker { content: ""; }
+/* Book list items: calm rows with a quiet hover surface. */
+body > div > ul li a.oo,
+body > div > ul li a.aa,
+body > div > ul li a.nn {
+  display: block;
+  padding: 9px 14px;
+  border-radius: var(--radius-pill);
+  color: var(--text-main);
+  transition: background 120ms ease, color 120ms ease;
+}
+body > div > ul li a.oo:hover,
+body > div > ul li a.aa:hover,
+body > div > ul li a.nn:hover {
+  background: var(--surface1);
+  color: var(--text-main);
+}
+body > div > ul li a.oo:visited,
+body > div > ul li a.aa:visited,
+body > div > ul li a.nn:visited { color: var(--text-main); }
+
+/* Old / New Testament section dividers */
 li.sep {
   list-style: none;
-  margin: 0.8em 0 0.3em;
-  padding: 0.3em 0 0.2em;
+  margin: 12px 4px 4px;
+  padding: 16px 14px 8px;
   border-top: 1px solid var(--border);
   text-align: center;
   font-weight: 600;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  font-size: 0.85em;
+  font-size: 0.72rem;
+  color: var(--tertiary);
 }
-li.sep:first-child { border-top: none; margin-top: 0; }
-li.sep span { color: var(--accent); }
+li.sep:first-child { border-top: none; margin-top: 4px; padding-top: 8px; }
+/* OT = first section divider (mauve), NT = second (teal). A small left
+ * accent dot reinforces the hue without shouting. */
+li.sep span { color: var(--tertiary); position: relative; padding-left: 16px; }
+li.sep span::before {
+  content: ""; position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+  width: 6px; height: 6px; border-radius: 50%; background: var(--overlay0);
+}
+li.sep:first-child span { color: var(--accent-ot); }
+li.sep:first-child span::before { background: var(--accent-ot); }
+li.sep:not(:first-child) span { color: var(--accent-nt); }
+li.sep:not(:first-child) span::before { background: var(--accent-nt); }
+
+/* ---------- Index footer note card ---------- */
+.mainindex {
+  background: transparent;
+  padding: 14px 4px 0;
+  font-size: 0.8rem;
+  border: none;
+  border-top: 1px solid var(--border);
+  border-radius: 0;
+  margin-top: 20px;
+}
+.mainindex a, .mainindex a:link { color: var(--link); text-decoration: underline;
+  text-decoration-color: rgba(137, 180, 250, 0.4); text-underline-offset: 2px; }
+.mainindex a:visited { color: var(--sapphire); text-decoration-color: rgba(116, 199, 236, 0.4); }
+.mainindex a:hover, .mainindex a:focus {
+  color: var(--rosewater);
+  text-decoration-color: var(--rosewater);
+}
+
+.toc { display: block; font-size: 1em; margin-left: 1em; margin-right: 1em; }
+
+/* ---------- Book table-of-contents page (GEN.htm, MAT.htm, ...) ----------
+ * Markup: <body class='chlist latin'><h1>Douay-Rheims 1899</h1><h1>Genesis</h1>
+ * followed by several <ul class='tnav'> chapter-number grids. */
+body.chlist { padding-bottom: 32px; }
+body.chlist h1 { padding: 24px 0 0; }
+body.chlist h1:first-of-type {
+  font-size: 0.72rem; font-weight: 600; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--tertiary);
+}
+body.chlist h1:first-of-type a:link,
+body.chlist h1:first-of-type a:visited { color: var(--tertiary); text-decoration: none; }
+body.chlist h1:first-of-type a:hover { color: var(--accent); text-decoration: none; }
+body.chlist h1:last-of-type {
+  font-size: 1.6rem; font-weight: 600; color: var(--text-main);
+  letter-spacing: -0.01em; padding: 2px 0 8px;
+  border-bottom: 1px solid var(--border); margin: 0 0 4px;
+}
+body.chlist ul.tnav { margin: 10px 0; }
+body.chlist ul.tnav a, body.chlist ul.tnav a:link {
+  min-width: 2.4em; text-align: center;
+}
