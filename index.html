@@ -9,6 +9,12 @@
 <link href='manifest.json' rel='manifest' />
 </head>
 <body>
+<div id="dl-bar"><i></i></div>
+<style>
+#dl-bar { position: fixed; top: 0; left: 0; width: 100%; height: 2px; opacity: 1; transition: opacity 800ms ease; pointer-events: none; z-index: 9999; }
+#dl-bar > i { display: block; height: 100%; width: var(--w, 0%); background: #5a7caa; transition: width 120ms linear; }
+#dl-bar[data-state="ready"], #dl-bar[data-state="aborted"] { opacity: 0; }
+</style>
 <h1>Catholic English Bible</h1>
 <div><ul>
 <li><a class='oo' href='src/GEN01.htm'>Genesis</a></li>
@@ -91,10 +97,62 @@
 <div class="fine">Translation: Douay-Rheims 1899 (Challoner revision), public domain. Source files freely obtained from <a href='https://ebible.org/engDRA/'>eBible.org/engDRA</a>. The Douay-Rheims carries a historical Catholic Imprimatur. Made for personal use, no guarantees are made about its accuracy or completeness.</div>
 </div>
 <script>
-if ('serviceWorker' in navigator) {
+(function () {
+  // Only mount when the archive strategy can actually run. Old Safari / no
+  // DecompressionStream / no SW: the bar never appears.
+  if (!('serviceWorker' in navigator)) return;
+  if (typeof DecompressionStream !== 'function') return;
+  var bar = document.getElementById('dl-bar');
+  if (!bar) return;
+  var fill = bar.querySelector('i'); // jshint ignore:line (kept for clarity)
+  var done = false;
+
+  function setWidth(pct) { bar.style.setProperty('--w', pct + '%'); }
+  function finish(state) {
+    if (done) return;
+    done = true;
+    bar.setAttribute('data-state', state);
+    // Fade opacity 1→0 over ~800ms, then remove the node. No trace after.
+    setTimeout(function () { if (bar.parentNode) bar.parentNode.removeChild(bar); }, 900);
+  }
+
+  navigator.serviceWorker.addEventListener('message', function (ev) {
+    var d = ev.data; if (!d) return;
+    if (d.type === 'progress') {
+      if (done) return;
+      // Guard: total === 0 would yield NaN width. Treat as 0%.
+      var w = (d.total > 0) ? (d.have / d.total) * 100 : 0;
+      setWidth(w);
+      // Reload-after-complete: a progress with have===total skips straight
+      // to the ready/fade path.
+      if (d.total > 0 && d.have === d.total) finish('ready');
+    } else if (d.type === 'complete') {
+      // Complete may arrive without a preceding progress on very fast
+      // networks; force 100% (no division) then fade.
+      setWidth(100);
+      finish('ready');
+    } else if (d.type === 'abort') {
+      // UI treats abort as done: fade so it doesn't look broken. No re-mount
+      // until next visit.
+      finish('aborted');
+    }
+  });
+
+  function sendQuery(sw) {
+    try { if (sw) sw.postMessage({ type: 'query-progress' }); } catch (e) {}
+  }
+
+  // ready resolves with reg.active — NOT navigator.serviceWorker.controller,
+  // which is null on the very first load (the controller trap). Both this and
+  // the controllerchange listener (post-activation re-sync) feed sendQuery.
+  navigator.serviceWorker.ready.then(function (reg) { sendQuery(reg.active); });
+  navigator.serviceWorker.addEventListener('controllerchange', function () {
+    sendQuery(navigator.serviceWorker.controller);
+  });
+
   window.addEventListener('load', function () {
     navigator.serviceWorker.register('sw.js').catch(function () {});
   });
-}
+})();
 </script>
 </body></html>

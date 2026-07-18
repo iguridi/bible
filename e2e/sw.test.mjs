@@ -254,6 +254,76 @@ await test('first paint not blocked by background precinct download', async () =
   } finally { await ctx.close(); }
 });
 
+// 8. Progress bar: 2px top bar reaches ready and is removed; a reload in
+//    the same context (archive already complete) reaches ready again without
+//    a stuck partial fill.
+await test('progress bar: reaches ready and is removed; reload-after-complete reaches ready', async () => {
+  const { ctx, page } = await newCtx();
+  try {
+    await page.goto(BASE + '/');
+    await waitSWReady(page);
+    await kickSync(page);
+    await waitForAllPrecincts(page, ORIGIN);
+    // Navigate to the index (SW-controlled) so syncPrecincts runs and the bar
+    // mounts; it must reach ready and then be removed after the fade.
+    await page.goto(BASE + '/');
+    await page.waitForFunction(
+      () => { const b = document.getElementById('dl-bar'); return b && b.getAttribute('data-state') === 'ready'; },
+      { timeout: 30000 }
+    );
+    await page.waitForFunction(
+      () => !document.getElementById('dl-bar'),
+      { timeout: 5000 }
+    );
+    // Reload-after-complete (same context, archive already cached): query
+    // returns have===total, so the bar skips straight to ready + fade.
+    await page.goto(BASE + '/');
+    await page.waitForFunction(
+      () => { const b = document.getElementById('dl-bar'); return b && b.getAttribute('data-state') === 'ready'; },
+      { timeout: 30000 }
+    );
+    await page.waitForFunction(
+      () => !document.getElementById('dl-bar'),
+      { timeout: 5000 }
+    );
+  } finally { await ctx.close(); }
+});
+
+// 9. Abort path: a 500 on part_03 aborts the sync; the bar fades. Unroute and
+//    reload and the next sync recovers to ready.
+await test('progress bar abort: 500 on part_03 → aborted + fades; reload recovers to ready', async () => {
+  const { ctx, page } = await newCtx();
+  const part03 = `${BASE}/bible.dat/part_03.dat`;
+  // context.route (not page.route) is required: SW-initiated fetches are
+  // intercepted at the context level, not the page level.
+  await ctx.route(part03, (route) => route.fulfill({ status: 500, body: 'err' }));
+  try {
+    await page.goto(BASE + '/');           // first load (pre-SW-control)
+    await waitSWReady(page);
+    // A controlled index navigation triggers syncPrecincts; the loop fetches
+    // part_01, part_02, then hits part_03's 500 → outer catch → abort.
+    await page.goto(BASE + '/');
+    await page.waitForFunction(
+      () => { const b = document.getElementById('dl-bar'); return b && b.getAttribute('data-state') === 'aborted'; },
+      { timeout: 30000 }
+    );
+    await page.waitForFunction(
+      () => !document.getElementById('dl-bar'),
+      { timeout: 5000 }
+    );
+    // Unroute the 500 and kick a fresh sync; part_03 is still missing (never
+    // cached), so the retry re-fetches it and the rest, reaching ready.
+    await ctx.unroute(part03);
+    await kickSync(page);
+    await waitForAllPrecincts(page, ORIGIN);
+    await page.goto(BASE + '/');
+    await page.waitForFunction(
+      () => { const b = document.getElementById('dl-bar'); return b && b.getAttribute('data-state') === 'ready'; },
+      { timeout: 30000 }
+    );
+  } finally { await ctx.close(); }
+});
+
 await browser.close();
 server.close();
 process.exit(summary() ? 0 : 1);

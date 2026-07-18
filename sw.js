@@ -52,6 +52,25 @@ function partUrl(n) {
 // died anyway and re-issue via the missing-from-cache check.
 const inFlight = new Set();
 
+// ---- progress broadcast (page ↔ SW) ----------------------------------------
+// Module-scope last-known progress so a query from a freshly-spun-up SW or a
+// reloaded tab can be answered without re-walking the caches every time.
+// Reset to 0/0 on SW spin-down, which is fine: the message handler re-derives
+// from caches before replying when lastTotal === 0.
+let lastHave = 0, lastTotal = 0;
+
+// Broadcast a message to every controlled client. Used for progress updates
+// (after each precinct cache.put), complete (loop end), and abort (outer catch).
+async function broadcast(msg) {
+  const clients = await self.clients.matchAll();
+  for (const c of clients) c.postMessage(msg);
+}
+
+async function broadcastProgress(have, total) {
+  lastHave = have; lastTotal = total;
+  await broadcast({ type: 'progress', have, total });
+}
+
 // ---- index access -----------------------------------------------------------
 let indexPromise = null;
 
@@ -100,25 +119,77 @@ async function syncPrecincts() {
   }
   const n = partCountFromIndex(idx);
   const cache = await caches.open(ARCHIVE_CACHE);
+  // Seed `have` with already-cached precincts so a resumed sync reports a
+  // non-zero starting point to the bar (and so complete fires correctly when
+  // every precinct was already present).
+  let have = 0;
   for (let p = 1; p <= n; p++) {
-    const url = partUrl(p);
-    if (inFlight.has(url)) continue;
-    // Resume granularity: a precinct already in cache is skipped; a missing
-    // one (iOS tab-kill, partial download) is re-fetched whole. No
-    // byte-range tracking, no appends — precincts are separate cache entries.
-    if (await caches.match(url, { cacheName: ARCHIVE_CACHE })) continue;
-    inFlight.add(url);
-    try {
-      const res = await fetch(url, { cache: 'no-store' });
-      if (!res.ok) continue; // leave missing; retry on next sync
+    if (await caches.match(partUrl(p), { cacheName: ARCHIVE_CACHE })) have++;
+  }
+  lastHave = have; lastTotal = n;
+  broadcastProgress(have, n);
+  try {
+    for (let p = 1; p <= n; p++) {
+      const url = partUrl(p);
+      if (inFlight.has(url)) continue;
+      // Resume granularity: a precinct already in cache is skipped; a missing
+      // one (iOS tab-kill, partial download) is re-fetched whole. No
+      // byte-range tracking, no appends — precincts are separate cache entries.
+      if (await caches.match(url, { cacheName: ARCHIVE_CACHE })) continue;
+      inFlight.add(url);
+      let res;
+      try {
+        res = await fetch(url, { cache: 'no-store' });
+      } catch (e) {
+        // Transient network failure on a single part: swallow and retry on
+        // the next sync. This is the only case the inner catch swallows.
+        continue;
+      } finally {
+        inFlight.delete(url);
+      }
+      // A non-ok response (e.g. 500) or a QuotaExceededError from cache.put
+      // escapes the inner catch and bubbles to the outer catch → abort, so
+      // the bar fades instead of zombie-hanging at a partial fill.
+      if (!res.ok) throw new Error(`precinct ${p} HTTP ${res.status}`);
       await cache.put(url, res.clone());
-    } catch (e) {
-      // network failure: leave missing, retry next sync
-    } finally {
-      inFlight.delete(url);
+      have++;
+      lastHave = have; lastTotal = n;
+      broadcastProgress(have, n);
     }
+    if (have === n) broadcast({ type: 'complete' });
+  } catch (e) {
+    // Outer catch: a hard failure (non-ok response or quota exceeded)
+    // escaped the inner per-precinct swallow. Flush last-known progress then
+    // tell the page to fade the bar so it doesn't look broken. Next visit
+    // re-queries; remounts only if have < total.
+    broadcastProgress(lastHave, lastTotal);
+    broadcast({ type: 'abort' });
   }
 }
+
+// ---- query-progress (page ↔ SW) --------------------------------------------
+// A reloaded tab needs to re-sync to the current download state, which is
+// entry-point-independent: the archive may already be complete or partially
+// fetched by a prior SW instance. The page queries on ready and on
+// controllerchange; the SW replies to the asking client only (loop updates
+// broadcast to all clients). waitUntil keeps the SW alive past the handler
+// return so the async reply actually fires.
+self.addEventListener('message', (event) => {
+  if (!supportsDecompression) return;
+  if (!event.data || event.data.type !== 'query-progress') return;
+  event.waitUntil((async () => {
+    if (lastTotal === 0) {
+      const total = partCountFromIndex(await ensureIndex());
+      let have = 0;
+      for (let p = 1; p <= total; p++)
+        if (await caches.match(partUrl(p), { cacheName: ARCHIVE_CACHE })) have++;
+      lastHave = have; lastTotal = total;
+    }
+    event.source.postMessage({ type: 'progress', have: lastHave, total: lastTotal });
+    if (lastTotal > 0 && lastHave === lastTotal)
+      event.source.postMessage({ type: 'complete' });
+  })());
+});
 
 // ---- decode one member out of a precinct ------------------------------------
 // The DecompressionStream invariant: it decodes concatenated multi-member
