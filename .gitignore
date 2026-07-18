@@ -3,3 +3,4 @@ node_modules/
 /Library/Caches/ms-playwright/
 *.log
 pbcopy
+e2e/_*.mjs
