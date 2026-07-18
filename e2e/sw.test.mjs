@@ -254,10 +254,9 @@ await test('first paint not blocked by background precinct download', async () =
   } finally { await ctx.close(); }
 });
 
-// 8. Progress bar: 2px top bar reaches ready and is removed; a reload in
-//    the same context (archive already complete) reaches ready again without
-//    a stuck partial fill.
-await test('progress bar: reaches ready and is removed; reload-after-complete reaches ready', async () => {
+// 8. Progress bar: 2px top bar reaches ready and stays at 100%; a reload in
+//    the same context (archive already complete) reaches ready again.
+await test('progress bar: reaches ready and stays at 100%; reload-after-complete reaches ready', async () => {
   const { ctx, page } = await newCtx();
   try {
     await page.goto(BASE + '/');
@@ -265,33 +264,29 @@ await test('progress bar: reaches ready and is removed; reload-after-complete re
     await kickSync(page);
     await waitForAllPrecincts(page, ORIGIN);
     // Navigate to the index (SW-controlled) so syncPrecincts runs and the bar
-    // mounts; it must reach ready and then be removed after the fade.
+    // mounts; it must reach ready and then PERSIST at 100% (no fade/remove).
     await page.goto(BASE + '/');
     await page.waitForFunction(
       () => { const b = document.getElementById('dl-bar'); return b && b.getAttribute('data-state') === 'ready'; },
       { timeout: 30000 }
     );
-    await page.waitForFunction(
-      () => !document.getElementById('dl-bar'),
-      { timeout: 5000 }
-    );
-    // Reload-after-complete (same context, archive already cached): query
-    // returns have===total, so the bar skips straight to ready + fade.
+    equal(await page.evaluate(() => document.getElementById('dl-bar').style.getPropertyValue('--w')), '100%', 'bar at 100% after ready');
+    await page.waitForTimeout(1000);
+    assert(await page.evaluate(() => !!document.getElementById('dl-bar')), 'bar persists after ready (not removed)');
+    // Reload-after-complete (same context, archive cached): bar remounts,
+    // query returns have===total, bar goes straight to ready at 100%.
     await page.goto(BASE + '/');
     await page.waitForFunction(
       () => { const b = document.getElementById('dl-bar'); return b && b.getAttribute('data-state') === 'ready'; },
       { timeout: 30000 }
     );
-    await page.waitForFunction(
-      () => !document.getElementById('dl-bar'),
-      { timeout: 5000 }
-    );
+    equal(await page.evaluate(() => document.getElementById('dl-bar').style.getPropertyValue('--w')), '100%', 'bar at 100% after reload');
   } finally { await ctx.close(); }
 });
 
-// 9. Abort path: a 500 on part_03 aborts the sync; the bar fades. Unroute and
-//    reload and the next sync recovers to ready.
-await test('progress bar abort: 500 on part_03 → aborted + fades; reload recovers to ready', async () => {
+// 9. Abort path: a 500 on part_03 aborts the sync; the aborted bar persists.
+//    Unroute and reload and the next sync recovers to ready.
+await test('progress bar abort: 500 on part_03 → aborted bar stays; reload recovers to ready', async () => {
   const { ctx, page } = await newCtx();
   const part03 = `${BASE}/bible.dat/part_03.dat`;
   // context.route (not page.route) is required: SW-initiated fetches are
@@ -307,10 +302,9 @@ await test('progress bar abort: 500 on part_03 → aborted + fades; reload recov
       () => { const b = document.getElementById('dl-bar'); return b && b.getAttribute('data-state') === 'aborted'; },
       { timeout: 30000 }
     );
-    await page.waitForFunction(
-      () => !document.getElementById('dl-bar'),
-      { timeout: 5000 }
-    );
+    // Aborted bar persists (partial width, muted red) — not removed.
+    await page.waitForTimeout(1000);
+    assert(await page.evaluate(() => !!document.getElementById('dl-bar')), 'aborted bar persists (not removed)');
     // Unroute the 500 and kick a fresh sync; part_03 is still missing (never
     // cached), so the retry re-fetches it and the rest, reaching ready.
     await ctx.unroute(part03);

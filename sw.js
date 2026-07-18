@@ -52,6 +52,18 @@ function partUrl(n) {
 // died anyway and re-issue via the missing-from-cache check.
 const inFlight = new Set();
 
+// Warm the IndexedDB-backed Cache Storage databases on SW startup. On a
+// cold-restarted SW (the browser stopped it after the background download
+// finished and the user later navigates), the first cache operation would
+// otherwise pay the IDB-open latency on the critical path of the first
+// chapter response. Kicking off the opens at top level overlaps them with
+// script eval / SW startup so they're usually done by the time the first
+// fetch event fires.
+const _warmCaches = Promise.all([
+  caches.open(ARCHIVE_CACHE).catch(() => {}),
+  caches.open(STANDALONE_CACHE).catch(() => {}),
+]);
+
 // ---- progress broadcast (page ↔ SW) ----------------------------------------
 // Module-scope last-known progress so a query from a freshly-spun-up SW or a
 // reloaded tab can be answered without re-walking the caches every time.
@@ -111,6 +123,9 @@ function partCountFromIndex(idx) {
 // ---- precinct sync (background, resumable) ----------------------------------
 async function syncPrecincts() {
   if (!supportsDecompression) return;
+  // No point fetching precincts offline; skipping also avoids offline-fetch
+  // hangs and redundant cold cache walks on the first offline navigation.
+  if (self.navigator && self.navigator.onLine === false) return;
   let idx;
   try {
     idx = await ensureIndex();
@@ -119,23 +134,27 @@ async function syncPrecincts() {
   }
   const n = partCountFromIndex(idx);
   const cache = await caches.open(ARCHIVE_CACHE);
-  // Seed `have` with already-cached precincts so a resumed sync reports a
-  // non-zero starting point to the bar (and so complete fires correctly when
-  // every precinct was already present).
   let have = 0;
-  for (let p = 1; p <= n; p++) {
-    if (await caches.match(partUrl(p), { cacheName: ARCHIVE_CACHE })) have++;
-  }
-  lastHave = have; lastTotal = n;
-  broadcastProgress(have, n);
+  lastTotal = n;
+  // Single pass: count cached precincts silently (lastHave tracks the running
+  // count so a query-progress reply stays accurate mid-pass) and broadcast
+  // only on freshly-put precincts plus a final broadcast. This avoids
+  // broadcasting a low `have` on a cold restart where every precinct is
+  // already cached (which would flicker a persisted 100% bar back down) and
+  // halves the cache work versus a separate seeding pass.
   try {
     for (let p = 1; p <= n; p++) {
       const url = partUrl(p);
       if (inFlight.has(url)) continue;
-      // Resume granularity: a precinct already in cache is skipped; a missing
-      // one (iOS tab-kill, partial download) is re-fetched whole. No
-      // byte-range tracking, no appends — precincts are separate cache entries.
-      if (await caches.match(url, { cacheName: ARCHIVE_CACHE })) continue;
+      // Resume granularity: a precinct already in cache is counted and
+      // skipped; a missing one (iOS tab-kill, partial download) is re-fetched
+      // whole. No byte-range tracking, no appends — precincts are separate
+      // cache entries.
+      if (await caches.match(url, { cacheName: ARCHIVE_CACHE })) {
+        have++;
+        lastHave = have;
+        continue;
+      }
       inFlight.add(url);
       let res;
       try {
@@ -148,20 +167,21 @@ async function syncPrecincts() {
         inFlight.delete(url);
       }
       // A non-ok response (e.g. 500) or a QuotaExceededError from cache.put
-      // escapes the inner catch and bubbles to the outer catch → abort, so
-      // the bar fades instead of zombie-hanging at a partial fill.
+      // escapes the inner catch and bubbles to the outer catch → abort.
       if (!res.ok) throw new Error(`precinct ${p} HTTP ${res.status}`);
       await cache.put(url, res.clone());
       have++;
-      lastHave = have; lastTotal = n;
+      lastHave = have;
       broadcastProgress(have, n);
     }
+    lastHave = have;
+    broadcastProgress(have, n);
     if (have === n) broadcast({ type: 'complete' });
   } catch (e) {
-    // Outer catch: a hard failure (non-ok response or quota exceeded)
-    // escaped the inner per-precinct swallow. Flush last-known progress then
-    // tell the page to fade the bar so it doesn't look broken. Next visit
-    // re-queries; remounts only if have < total.
+    // Outer catch: a hard failure escaped the inner per-precinct swallow.
+    // Flush last-known progress then signal abort. Next visit re-queries and
+    // resumes only if have < total.
+    lastHave = have;
     broadcastProgress(lastHave, lastTotal);
     broadcast({ type: 'abort' });
   }

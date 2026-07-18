@@ -11,9 +11,9 @@
 <body>
 <div id="dl-bar"><i></i></div>
 <style>
-#dl-bar { position: fixed; top: 0; left: 0; width: 100%; height: 2px; opacity: 1; transition: opacity 800ms ease; pointer-events: none; z-index: 9999; }
-#dl-bar > i { display: block; height: 100%; width: var(--w, 0%); background: #5a7caa; transition: width 120ms linear; }
-#dl-bar[data-state="ready"], #dl-bar[data-state="aborted"] { opacity: 0; }
+#dl-bar { position: fixed; top: 0; left: 0; width: 100%; height: 2px; pointer-events: none; z-index: 9999; }
+#dl-bar > i { display: block; height: 100%; width: var(--w, 0%); background: #5a7caa; }
+#dl-bar[data-state="aborted"] > i { background: #8a5a5a; }
 </style>
 <h1>Catholic English Bible</h1>
 <div><ul>
@@ -104,37 +104,35 @@
   if (typeof DecompressionStream !== 'function') return;
   var bar = document.getElementById('dl-bar');
   if (!bar) return;
-  var fill = bar.querySelector('i'); // jshint ignore:line (kept for clarity)
-  var done = false;
 
   function setWidth(pct) { bar.style.setProperty('--w', pct + '%'); }
-  function finish(state) {
-    if (done) return;
-    done = true;
-    bar.setAttribute('data-state', state);
-    // Fade opacity 1→0 over ~800ms, then remove the node. No trace after.
-    setTimeout(function () { if (bar.parentNode) bar.parentNode.removeChild(bar); }, 900);
-  }
 
+  // The bar persists for the page session: it fills as the archive streams
+  // in, stays at 100% once complete, and stays at the partial width (muted
+  // red) if the download aborts — so the user always sees the real state.
+  // No fade, no removal; a reloaded page remounts fresh and re-syncs via
+  // query-progress. Width snaps to each value (no CSS transition) so rapid
+  // monotonic broadcasts don't stutter.
   navigator.serviceWorker.addEventListener('message', function (ev) {
     var d = ev.data; if (!d) return;
     if (d.type === 'progress') {
-      if (done) return;
       // Guard: total === 0 would yield NaN width. Treat as 0%.
-      var w = (d.total > 0) ? (d.have / d.total) * 100 : 0;
-      setWidth(w);
-      // Reload-after-complete: a progress with have===total skips straight
-      // to the ready/fade path.
-      if (d.total > 0 && d.have === d.total) finish('ready');
+      setWidth((d.total > 0) ? (d.have / d.total) * 100 : 0);
+      // Reload-after-complete: a progress with have===total goes straight to
+      // ready at 100%.
+      if (d.total > 0 && d.have === d.total) {
+        setWidth(100);
+        bar.setAttribute('data-state', 'ready');
+      }
     } else if (d.type === 'complete') {
       // Complete may arrive without a preceding progress on very fast
-      // networks; force 100% (no division) then fade.
+      // networks; force 100% (no division).
       setWidth(100);
-      finish('ready');
+      bar.setAttribute('data-state', 'ready');
     } else if (d.type === 'abort') {
-      // UI treats abort as done: fade so it doesn't look broken. No re-mount
-      // until next visit.
-      finish('aborted');
+      // Stay at the partial width with the aborted colour so it's clear the
+      // download didn't finish; next visit re-queries and resumes.
+      bar.setAttribute('data-state', 'aborted');
     }
   });
 
