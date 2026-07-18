@@ -2,33 +2,106 @@ html {height:100%;font-size:1.3rem;line-height:1.4;color:black}
 html {font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";}
 html {-webkit-text-size-adjust: 100%}
 html,body {margin: 0 auto}
-body {max-width:700px;background-color: #1b2733;color:#ece9e6;}
-h1 { font-weight: normal; }
+:root {
+  --bg: #1b2733;
+  --panel: #243340;
+  --panel-2: #2a3744;
+  --text: #ece9e6;
+  --muted: #b8b0a4;
+  --accent: #c9a86a;   /* warm gold */
+  --accent-ot: #6f8db5;/* muted blue */
+  --accent-nt: #c9a86a;/* gold */
+  --link: #8fb3d9;     /* readable cool blue for inline links */
+  --border: #3a4856;
+}
+body {max-width:700px;background-color: var(--bg);color:var(--text);}
+h1 {
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: 0.02em;
+  padding: 0.4em 0 0.2em;
+  border-bottom: 1px solid var(--border);
+  margin: 0 0 0.6em;
+}
 li	{list-style:disc inside}
+li::marker { color: var(--accent); }
 
-.main	{min-height:100%;margin-bottom:-4em;padding:0.5em}
-.main:after	{content:"";display:block}
+.main	{min-height:100%;margin-bottom:-4em;padding:0.8em 1em;background:var(--panel);border:1px solid var(--border);border-radius:6px;margin:0.6em 0}
+.main:after	{content:"";display:block;clear:both}
+/* The copyright page nests a .main inside .main; don't double-panel it. */
+.main > .main { background: transparent; border: none; border-radius: 0; padding: 0; margin: 0; }
 
 h1,h2,h3,.mt,.mt2,.mt3	{font-weight:bold;font-size:1.2em;text-align:center}
-.mt	{font-size:1.4em}
-.mt2	{font-size:1.2em}
+h2 { color: var(--muted); font-weight: normal; font-size: 1em; margin: 0.4em 0 0.8em; }
+.mt	{font-size:1.4em;color:var(--accent)}
+.mt2	{font-size:1.2em;color:var(--muted);font-weight:normal}
+.mt3	{color:var(--muted);font-weight:normal}
 
 .p	{display:block;font-size:1em}
 .q	{margin-top:0pt}
 
 .toc	{display:block;font-size:1em;margin-left:1em;margin-right:1em}
-.chapterlabel	{text-align:center;margin-top:1em;font-size:1.1em}
-.verse	{white-space:nowrap; display:block; margin-top: 1em;}
-.footnote	{display: block; margin-top:.5em;margin-left:0em}
-.fine	{font-size:10pt;color:#333333}
-.mainindex	{background:#3b4753; padding: 8px; font-size: 0.9rem}
+.chapterlabel	{text-align:center;margin-top:1em;margin-bottom:0.4em;font-size:1.3em;font-weight:bold;color:var(--accent);border-bottom:1px solid var(--border);padding-bottom:0.3em}
+.verse	{white-space:normal; display:block; margin-top: 0.6em; line-height: 1.6; font-weight: 500; }
+.verse:first-child { margin-top: 0; }
+.p	{display:block;font-size:1em;line-height:1.6;text-indent:0;margin-bottom:0.2em}
+.footnote	{display: block; margin-top:1.2em;margin-left:0em}
+.footnote hr { border: none; border-top: 1px solid var(--border); height: 0; margin: 0; }
+.copyright { text-align:center; margin-top:1em; font-size:0.85em; color:var(--muted) }
+.fine	{font-size:10pt;color:var(--muted)}
+.mainindex	{background:var(--panel-2); padding: 12px 14px; font-size: 0.9rem; border:1px solid var(--border); border-top:3px solid var(--accent); border-radius:6px; margin-top:1.2em}
+.mainindex a, .mainindex a:link { color: var(--link); text-decoration: none; }
+.mainindex a:visited { color: #b39ad9; }
+.mainindex a:hover, .mainindex a:focus { color: #fff; text-decoration: underline; }
 
-ul.tnav	{list-style-type:none;text-align:center}
+ul.tnav	{list-style-type:none;text-align:center;margin:0.6em 0;padding-left:0}
 .tnav li	{display:inline}
-.tnav a	{display:inline-block; padding: 3px 3px;background-color:#1b2733;text-decoration:none;color:#000;border-radius:5px;min-width:1.5em}
-.tnav a:visited	{color:#404000}
-.tnav a:link	{color:#000040}
-.tnav a:hover	{color:#FFFFFF;background-color:#204880}
+.tnav a, .tnav a:link	{display:inline-block; padding:3px 9px;background:var(--panel-2);text-decoration:none;color:var(--text);border:1px solid var(--border);border-radius:5px;min-width:1.5em;font-size:0.9em}
+.tnav a:visited	{color:var(--text)}
+.tnav a:hover	{color:var(--accent);border-color:var(--accent);background:var(--bg)}
+.tnav a:focus	{outline:2px solid var(--accent);outline-offset:1px}
+/* The active/current chapter number link (points to its own page) */
+.tnav a[href]:not([href='']) { }
 
-a.oo, a.aa, a.nn { color: #ece9e6; text-decoration: none;}
-a.oo:hover, a.aa:hover, a.nn:hover { color: #ccc9c6; }
+a.oo, a.aa, a.nn { color: var(--text); text-decoration: none; padding: 1px 0; }
+a.oo:hover, a.aa:hover, a.nn:hover { color: var(--accent); }
+a.oo:focus, a.aa:focus, a.nn:focus { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
+a.oo:visited, a.aa:visited, a.nn:visited { color: var(--text); }
+
+/* ---- Subpage link theming ---- */
+/* Generic inline links inside .main (copyright page body links: "Go!",
+   "Public Domain", eBible.org, Haiola, etc.). :where() keeps specificity at
+   (0,0,1) so the targeted rules below (.tnav, .copyright, h1, .oo/.aa/.nn)
+   always win. */
+:where(.main) a:link { color: var(--link); text-decoration: none; }
+:where(.main) a:visited { color: #b39ad9; }
+:where(.main) a:hover, :where(.main) a:focus { color: #fff; text-decoration: underline; }
+/* The centered "Public Domain" link at chapter foot is small/muted. */
+.copyright a, .copyright a:link, .copyright a:visited { color: var(--muted); text-decoration: none; }
+.copyright a:hover, .copyright a:focus { color: var(--accent); text-decoration: underline; }
+/* h1 links (book-list page titles, chapter page titles) inherit the gold h1. */
+h1 a, h1 a:link, h1 a:visited { color: inherit; text-decoration: none; }
+h1 a:hover, h1 a:focus { color: #fff; text-decoration: underline; }
+
+/* Index page book list panel */
+body > div > ul {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.6em 0.8em;
+}
+
+/* Old / New Testament section dividers in the book list */
+li.sep {
+  list-style: none;
+  margin: 0.8em 0 0.3em;
+  padding: 0.3em 0 0.2em;
+  border-top: 1px solid var(--border);
+  text-align: center;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: 0.85em;
+}
+li.sep:first-child { border-top: none; margin-top: 0; }
+li.sep span { color: var(--accent); }
