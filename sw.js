@@ -269,6 +269,14 @@ self.addEventListener('install', (event) => {
   // first-visit SW activates immediately.
   self.skipWaiting();
   event.waitUntil((async () => {
+    // Request persistent storage so the browser is far less likely to evict
+    // the archive under disk pressure. Best-effort: some browsers prompt the
+    // user, some silently grant/deny; a false result just means best-effort
+    // LRU eviction remains in effect (the spec's resumable precinct design
+    // already handles re-download gracefully).
+    if (navigator.storage && navigator.storage.persist) {
+      try { await navigator.storage.persist(); } catch (e) { /* ignore */ }
+    }
     try {
       const res = await fetch(INDEX_URL, { cache: 'no-store' });
       if (res.ok) {
