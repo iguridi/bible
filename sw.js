@@ -176,7 +176,6 @@ async function syncPrecincts() {
     }
     lastHave = have;
     broadcastProgress(have, n);
-    if (have === n) broadcast({ type: 'complete' });
   } catch (e) {
     // Outer catch: a hard failure escaped the inner per-precinct swallow.
     // Flush last-known progress then signal abort. Next visit re-queries and
@@ -206,8 +205,6 @@ self.addEventListener('message', (event) => {
       lastHave = have; lastTotal = total;
     }
     event.source.postMessage({ type: 'progress', have: lastHave, total: lastTotal });
-    if (lastTotal > 0 && lastHave === lastTotal)
-      event.source.postMessage({ type: 'complete' });
   })());
 });
 

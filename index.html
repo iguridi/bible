@@ -124,11 +124,6 @@
         setWidth(100);
         bar.setAttribute('data-state', 'ready');
       }
-    } else if (d.type === 'complete') {
-      // Complete may arrive without a preceding progress on very fast
-      // networks; force 100% (no division).
-      setWidth(100);
-      bar.setAttribute('data-state', 'ready');
     } else if (d.type === 'abort') {
       // Stay at the partial width with the aborted colour so it's clear the
       // download didn't finish; next visit re-queries and resumes.
