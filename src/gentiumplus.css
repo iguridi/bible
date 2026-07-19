@@ -28,6 +28,7 @@
   --rosewater: #f5e0dc;
   --green:     #a6e3a1;
   --peach:     #fab387;
+  --red:       #f38ba8;
 
   /* Semantic aliases */
   --bg:        var(--base);
@@ -42,17 +43,62 @@
   --link:      var(--blue);
   --border:    rgba(108, 112, 134, 0.42); /* overlay0 @ ~42% (raised for AA separation) */
   --border-strong: rgba(108, 112, 134, 0.55);
+  --link-underline: rgba(137, 180, 250, 0.4);   /* blue @ 40% */
+  --visited-underline: rgba(116, 199, 236, 0.4); /* sapphire @ 40% */
 
   /* Typography */
   --ui-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
              Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
-  --reading-font: "Source Serif 4", "Iowan Old Style", "Charter", Georgia,
-                  "Times New Roman", serif;
+  --reading-font: -apple-system, BlinkMacSystemFont, "Aptos", Roboto,
+                  "Segoe UI", Helvetica, Arial, sans-serif;
 
   /* Rhythm (8px grid) */
   --radius-card: 16px;
   --radius-pill: 8px;
   --gap: 32px;
+}
+
+/* ---------- Light mode: Catppuccin Latte (follows system preference) ----------
+ * Mocha (above) is the dark default; when the OS/browser asks for light we
+ * swap the raw palette tokens to Latte. Semantic aliases (--bg, --panel,
+ * --text-main, --accent, ...) re-resolve automatically because they point at
+ * these tokens. */
+@media (prefers-color-scheme: light) {
+  :root {
+    --base:      #eff1f5;  /* page background */
+    --mantle:    #e6e9ef;
+    --crust:     #dce0e8;
+    --surface0:  #ccd0da;  /* cards / panels */
+    --surface1:  #bcc0cc;  /* buttons / hover surface */
+    --surface2:  #acb0be;  /* active / pressed */
+    --overlay0:  #9ca0b0;  /* borders, dividers */
+    --overlay1:  #8c8fa1;  /* tertiary text */
+    --overlay2:  #7c7f93;
+    --subtext0:  #6c6f85;  /* secondary text */
+    --subtext1:  #5c5f77;
+    --text:      #4c4f69;  /* primary text */
+
+    --lavender:  #7287fd;
+    --mauve:     #8839ef;
+    --teal:      #179299;
+    --blue:      #1e66f5;
+    --sapphire:  #209fb5;
+    --rosewater: #dc8a78;
+    --green:     #40a02b;
+    --peach:     #fe640b;
+    --red:       #d20f39;
+
+    --border:    rgba(156, 160, 176, 0.42);
+    --border-strong: rgba(156, 160, 176, 0.60);
+    --link-underline: rgba(30, 102, 245, 0.4);
+    --visited-underline: rgba(32, 159, 181, 0.4);
+  }
+  /* On a light surface, subpixel antialiasing renders glyphs fuller/richer
+   * (grayscale `antialiased`, correct for dark mode, looks thin on white).
+   * This is what makes system-UI sans read "fuller" on light sites. */
+  body {
+    -webkit-font-smoothing: subpixel-antialiased;
+  }
 }
 
 /* ---------- Skip link (a11y) ---------- */
@@ -111,7 +157,8 @@ h2 {
   color: var(--muted);
   margin: 6px 0 0;
 }
-.mt  { font-size: 1.5rem; color: var(--text-main); letter-spacing: -0.01em; }
+.mt  { font-size: 1.5rem; color: var(--text-main); letter-spacing: -0.01em;
+       margin: 6px 0 0; }
 .mt2 { font-size: 0.72rem; color: var(--subtext0); font-weight: 500;
        text-transform: uppercase; letter-spacing: 0.12em; }
 .mt3 { font-size: 0.72rem; color: var(--subtext0); font-weight: 500;
@@ -121,7 +168,7 @@ h2 {
 /* Chapter text sits directly on the page background — no "sheet of paper" card. */
 .main {
   min-height: 100%;
-  margin: 16px 0;
+  margin: 8px 0 16px;
   padding: 0;
   background: transparent;
   border: none;
@@ -149,7 +196,7 @@ h2 {
 /* ---------- Chapter heading ---------- */
 .chapterlabel {
   text-align: center;
-  margin: 28px 0 20px;
+  margin: 28px 0 32px;
   padding-bottom: 16px;
   font-family: var(--ui-font);
   font-size: 0.9rem;
@@ -173,16 +220,18 @@ h2 {
 .p {
   display: block;
   font-family: var(--reading-font);
-  font-size: 1.05rem;
-  line-height: 1.7;
+  font-size: 1.2rem;
+  font-weight: 500;
+  line-height: 1.75;
   color: var(--text-main);
   margin: 0 0 4px;
+  letter-spacing: 0.005em;
 }
 .verse {
   display: block;
-  margin-top: 0.7em;
+  margin-top: 0.75em;
   font-family: var(--ui-font);
-  font-size: 0.72rem;
+  font-size: 0.8rem;
   font-weight: 600;
   line-height: 1;
   color: var(--subtext0);
@@ -217,16 +266,23 @@ h2 {
 /* ---------- Top / bottom chapter nav (tnav) ---------- */
 ul.tnav {
   list-style-type: none;
-  text-align: center;
-  margin: 4px 0 16px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  margin: 12px 0;
   padding: 0;
 }
-/* Flat text nav row — no per-pill button chrome (keeps the 44px touch target). */
-.tnav li { display: inline; }
+/* Flat text nav row — no per-pill button chrome (keeps the 44px touch target).
+ * Each li is an inline-flex row so the middot separator and the 44px pill
+ * share one centered axis (no baseline wobble between tall pills and the
+ * small · glyph). */
+.tnav li { display: inline-flex; align-items: center; }
 .tnav li + li::before {
   content: "\00b7"; /* middot separator between pills */
   color: var(--overlay0);
-  margin-right: 6px;
+  margin: 0 4px 0 2px;
   speak: none;
 }
 .tnav a, .tnav a:link {
@@ -283,8 +339,8 @@ a.nn:hover { color: var(--accent-nt); }
 /* ---------- Inline links inside .main (copyright page body) ---------- */
 /* :where() keeps specificity at (0,0,1) so targeted rules below win. */
 :where(.main) a:link { color: var(--link); text-decoration: underline;
-  text-decoration-color: rgba(137, 180, 250, 0.4); text-underline-offset: 2px; }
-:where(.main) a:visited { color: var(--sapphire); text-decoration-color: rgba(116, 199, 236, 0.4); }
+  text-decoration-color: var(--link-underline); text-underline-offset: 2px; }
+:where(.main) a:visited { color: var(--sapphire); text-decoration-color: var(--visited-underline); }
 :where(.main) a:hover, :where(.main) a:focus {
   color: var(--rosewater);
   text-decoration-color: var(--rosewater);
@@ -296,15 +352,15 @@ h1 a:hover, h1 a:focus { color: var(--accent); text-decoration: underline; }
 /* Remove default disc bullets from the book list. */
 main#main > div > ul {
   list-style: none;
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-card);
-  padding: 8px;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
   margin: 16px 0;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
   gap: 4px;
-  /* flat container — drop the floating-card shadow */
+  /* Flat, matching the chapter reading surface — no panel card. */
 }
 main#main > div > ul li { list-style: none; }
 main#main > div > ul li::marker { content: ""; }
@@ -366,8 +422,8 @@ li.sep:not(:first-child) span::before { background: var(--accent-nt); }
   margin-top: 20px;
 }
 .mainindex a, .mainindex a:link { color: var(--link); text-decoration: underline;
-  text-decoration-color: rgba(137, 180, 250, 0.4); text-underline-offset: 2px; }
-.mainindex a:visited { color: var(--sapphire); text-decoration-color: rgba(116, 199, 236, 0.4); }
+  text-decoration-color: var(--link-underline); text-underline-offset: 2px; }
+.mainindex a:visited { color: var(--sapphire); text-decoration-color: var(--visited-underline); }
 .mainindex a:hover, .mainindex a:focus {
   color: var(--rosewater);
   text-decoration-color: var(--rosewater);
@@ -400,11 +456,11 @@ body.chlist h1 {
   border-bottom: 1px solid var(--border); margin: 0 0 4px;
 }
 body.chlist {
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-card);
+  background: transparent;
+  border: none;
+  border-radius: 0;
   margin: 16px auto;
-  padding: 4px 20px 24px;
+  padding: 4px 16px 24px;
 }
 body.chlist ul.tnav {
   margin: 10px 0;
