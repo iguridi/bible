@@ -117,15 +117,23 @@ h2 {
 .mt3 { font-size: 0.72rem; color: var(--subtext0); font-weight: 500;
        text-transform: uppercase; letter-spacing: 0.12em; }
 
-/* ---------- Main reading card ---------- */
+/* ---------- Main reading surface ---------- */
+/* Chapter text sits directly on the page background — no "sheet of paper" card. */
 .main {
   min-height: 100%;
   margin: 16px 0;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+/* The copyright page keeps a card (it's meta info, not long-form scripture). */
+.main.meta {
   padding: 28px 28px;
   background: var(--panel);
   border: 1px solid var(--border);
   border-radius: var(--radius-card);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.18);
 }
 .main:after { content: ""; display: block; clear: both; }
 /* The copyright page nests a .main inside .main; don't double-panel it. */
@@ -213,7 +221,14 @@ ul.tnav {
   margin: 4px 0 16px;
   padding: 0;
 }
+/* Flat text nav row — no per-pill button chrome (keeps the 44px touch target). */
 .tnav li { display: inline; }
+.tnav li + li::before {
+  content: "\00b7"; /* middot separator between pills */
+  color: var(--overlay0);
+  margin-right: 6px;
+  speak: none;
+}
 .tnav a, .tnav a:link {
   display: inline-flex;
   align-items: center;
@@ -221,23 +236,18 @@ ul.tnav {
   box-sizing: border-box;
   min-height: 44px;
   padding: 10px 14px;
-  background: var(--panel-2);
+  background: transparent;
   text-decoration: none;
   color: var(--subtext1);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-pill);
+  border: none;
+  border-radius: 0;
   min-width: 1.75em;
   font-size: 0.82rem;
   font-family: var(--ui-font);
-  transition: background 120ms ease, color 120ms ease,
-              border-color 120ms ease;
+  transition: color 120ms ease;
 }
 .tnav a:visited { color: var(--subtext1); }
-.tnav a:hover {
-  color: var(--text-main);
-  border-color: var(--border-strong);
-  background: var(--surface2);
-}
+.tnav a:hover { color: var(--text-main); }
 .tnav a:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
@@ -249,8 +259,6 @@ ul.tnav {
  * them and leaves book-TOC pages (GEN.htm) untouched. */
 ul.tnav:has(> li:first-child a[href$="index.html"]) > li:nth-child(3) > a {
   color: var(--accent);
-  border-color: rgba(180, 190, 254, 0.55);
-  background: rgba(180, 190, 254, 0.22);
   font-weight: 600;
 }
 
@@ -286,39 +294,39 @@ h1 a:hover, h1 a:focus { color: var(--accent); text-decoration: underline; }
 
 /* ---------- Index page ---------- */
 /* Remove default disc bullets from the book list. */
-body > div > ul {
+main#main > div > ul {
   list-style: none;
   background: var(--panel);
   border: 1px solid var(--border);
   border-radius: var(--radius-card);
   padding: 8px;
   margin: 16px 0;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.18);
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
   gap: 4px;
+  /* flat container — drop the floating-card shadow */
 }
-body > div > ul li { list-style: none; }
-body > div > ul li::marker { content: ""; }
+main#main > div > ul li { list-style: none; }
+main#main > div > ul li::marker { content: ""; }
 /* Book list items: calm rows with a quiet hover surface. */
-body > div > ul li a.oo,
-body > div > ul li a.aa,
-body > div > ul li a.nn {
+main#main > div > ul li a.oo,
+main#main > div > ul li a.aa,
+main#main > div > ul li a.nn {
   display: block;
   padding: 9px 14px;
   border-radius: var(--radius-pill);
   color: var(--text-main);
   transition: background 120ms ease, color 120ms ease;
 }
-body > div > ul li a.oo:hover,
-body > div > ul li a.aa:hover,
-body > div > ul li a.nn:hover {
+main#main > div > ul li a.oo:hover,
+main#main > div > ul li a.aa:hover,
+main#main > div > ul li a.nn:hover {
   background: var(--surface2);
   color: var(--text-main);
 }
-body > div > ul li a.oo:visited,
-body > div > ul li a.aa:visited,
-body > div > ul li a.nn:visited { color: var(--text-main); }
+main#main > div > ul li a.oo:visited,
+main#main > div > ul li a.aa:visited,
+main#main > div > ul li a.nn:visited { color: var(--text-main); }
 
 /* Old / New Testament section dividers */
 li.sep {
@@ -395,7 +403,6 @@ body.chlist {
   background: var(--panel);
   border: 1px solid var(--border);
   border-radius: var(--radius-card);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.18);
   margin: 16px auto;
   padding: 4px 20px 24px;
 }
@@ -409,6 +416,79 @@ body.chlist ul.tnav {
 }
 body.chlist ul.tnav a, body.chlist ul.tnav a:link {
   min-width: 2.4em; text-align: center;
+}
+
+/* ---------- Mobile: <=3mm side margin, full-bleed reading surface ----------
+ * On phones the desktop card-in-a-card side padding (16px body + 28px
+ * card = 44px) wastes the narrow viewport. Drop the body side padding and
+ * the card's side chrome (border / radius / shadow) so the panel goes
+ * full-bleed, and set every text container's horizontal padding to 3mm —
+ * the max gap from screen border to where text actually starts.
+ */
+@media (max-width: 600px) {
+  body {
+    max-width: none;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  /* Chapter reading card: full-bleed panel, text 3mm from each edge. */
+  .main {
+    margin-left: 0;
+    margin-right: 0;
+    padding: 28px 3mm;
+    border-left: none;
+    border-right: none;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  /* Book table-of-contents page (GEN.htm, MAT.htm, ...). */
+  body.chlist {
+    margin-left: 0;
+    margin-right: 0;
+    padding: 4px 3mm 24px;
+    border-left: none;
+    border-right: none;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  body.chlist h1 { padding-left: 0; padding-right: 0; }
+
+  /* Top / bottom chapter-nav pill rows on chapter pages (body > ul.tnav):
+   * give the centered pills a 3mm side clearance so they never touch the
+   * screen edge. (On chlist pages the tnav is inside the 3mm-padded card,
+   * so it's already covered.) */
+  body > ul.tnav { padding-left: 3mm; padding-right: 3mm; }
+
+  /* Index page: book list goes full-bleed; link text 3mm from each edge.
+   *   - h1 sits directly in #main (no .main card), so it needs its own 3mm.
+   *   - The list card drops its side border/radius/shadow; the ul's own side
+   *     padding is zeroed and each link row carries the 3mm inset, so the
+   *     hover surface can run full-bleed while the text stays at 3mm. */
+  #main > h1 { padding-left: 3mm; padding-right: 3mm; }
+  #main > div > ul {
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 0;
+    padding-right: 0;
+    border-left: none;
+    border-right: none;
+    border-radius: 0;
+  }
+  #main > div > ul li a.oo,
+  #main > div > ul li a.aa,
+  #main > div > ul li a.nn {
+    padding-left: 3mm;
+    padding-right: 3mm;
+  }
+  #main > div > ul li.sep {
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 3mm;
+    padding-right: 3mm;
+  }
+  .mainindex { padding-left: 3mm; padding-right: 3mm; }
 }
 
 /* ---------- Reduced motion ---------- */
