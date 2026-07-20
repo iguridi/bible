@@ -428,28 +428,38 @@ body:has(.home-mark) ul.tnav > li > a[aria-label="Next chapter"]::before {
 }
 
 /* ---------- Home mark (top-left corner link to the all-books index) ----------
- * A subtle ✦ in the accent color, pinned to the top-left corner of the
- * viewport on chapter pages only (injected before the top tnav). It's the
- * "home" affordance — clicking it goes to the index. Quiet by default;
- * brightens on hover/focus. position: fixed so it stays put while
- * scrolling (always-available home), and so it doesn't collide with the
- * in-flow top tnav. The skip-link (also top-left, hidden until focused)
- * sits at z-index 100 and slides in at top:0 on focus — the home-mark is
- * at top:8 left:8 and the skip-link covers a wider band, so they don't
- * visually clash; on the rare focus of the skip-link it sits above the
- * home-mark (higher z-index) which is fine. */
+ * A subtle ☰ (list/contents glyph — the universal 'index' affordance) in
+ * the top-left corner of chapter pages only (injected before the top tnav).
+ * It's the 'home / all books' affordance — clicking it goes straight to the
+ * index. Quiet by default; brightens to the accent on hover/focus.
+ *
+ * ALIGNMENT: it sits on the SAME vertical axis as the nav-row text, not
+ * floating above it. We do this by NOT using position: fixed; instead the
+ * home-mark is the first item in a flex row that contains it + the top
+ * tnav... no — simpler: keep it position: fixed but vertically centre it on
+ * the top tnav's band (top = tnav's top + half a pill height minus half the
+ * mark height). Because the tnav's top depends on mobile vs desktop, use a
+ * CSS custom approach: align the mark's centre to the first nav pill's
+ * centre. The cleanest expression: pin the mark's top so its vertical
+ * centre equals the prev pill's vertical centre. Prev pill = 48px tall,
+ * starts at margin-top 44px → centre at 44 + 24 = 68px. Mark = 24px tall →
+ * top = 68 - 12 = 56px. (We shrink the mark box to 24px so it matches the
+ * nav text height rather than being a big 32px corner badge.) */
 .home-mark {
   position: fixed;
-  top: 8px;
-  left: 12px;
+  top: 46px;          /* vertically centred on the prev pill's band:
+                        pill top=44, pill h=48 → centre=68; mark box h=44
+                        → top = 68 - 22 = 46. (44px box = AA touch target;
+                        the glyph inside is ~17px so it stays visually quiet.) */
+  left: 4px;
   z-index: 50;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 44px;          /* 44px hit area (AA touch target) */
+  height: 44px;
   text-decoration: none;
-  font-size: 1.1rem;
+  font-size: 1rem;
   line-height: 1;
   color: var(--overlay1);   /* dim by default — subtle, not a loud logo */
   border-radius: var(--radius-pill);
@@ -468,14 +478,15 @@ body:has(.home-mark) ul.tnav > li > a[aria-label="Next chapter"]::before {
 }
 /* On mobile the home-mark sits in the 3mm side-margin zone; nudge it in
  * slightly so it clears the screen edge with the same clearance as the
- * nav pills. */
+ * nav pills, and align it to the mobile nav band (prev pill centre). */
 @media (max-width: 600px) {
-  .home-mark { left: 3mm; top: 6px; }
+  .home-mark { left: 0; top: 46px; }
 }
-/* The fixed home-mark (32px tall, top:6-8px) overlaps the in-flow top
- * tnav on chapter pages — push the FIRST tnav down enough to clear it.
- * Only the first tnav needs this (the bottom tnav is far below). Scope via
- * body:has(.home-mark) so book-TOC/copyright pages are unaffected. */
+/* The fixed home-mark (24px tall, centred on the top nav band) does NOT
+ * overlap the in-flow top tnav anymore (it's beside it, on the same band),
+ * but the top tnav still needs a little top margin so the row isn't glued
+ * to the top of the viewport. Scope via body:has(.home-mark) so
+ * book-TOC/copyright pages are unaffected. */
 body:has(.home-mark) ul.tnav:first-of-type {
   margin-top: 44px;
 }

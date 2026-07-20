@@ -1,4 +1,5 @@
 node_modules/
+es/_raw/
 # Playwright browser cache / install artifacts
 /Library/Caches/ms-playwright/
 *.log

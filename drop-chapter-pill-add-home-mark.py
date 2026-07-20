@@ -38,7 +38,7 @@ CHAPTER_TNAV_4 = re.compile(
 )
 
 HOME_MARK = (b'<a class="home-mark" href="../index.html" aria-label="All books">'
-             b"\xe2\x9c\xa6</a>\r\n")  # ✦ U+2726 BLACK FOUR POINTED STAR
+             b"\xe2\x98\xb0</a>\r\n")  # ☰ U+2630 TRIGRAM FOR HEAVEN (list/contents/index glyph)
 
 def drop_current_li(m):
     # 11 groups: 1=nl1, 2=book_href, 3=book_text, 4=nl2, 5=prev_href,

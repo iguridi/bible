@@ -7,7 +7,8 @@
     "build": "node build-archive.js",
     "test": "node e2e/run-all.mjs",
     "test:build": "node e2e/build.test.mjs",
-    "test:e2e": "node e2e/sw.test.mjs"
+    "test:e2e": "node e2e/sw.test.mjs",
+    "acquire:es": "node acquire-es.js"
   },
   "devDependencies": {
     "playwright": "1.61.1"
