@@ -7,11 +7,14 @@
 :root {
   /* Catppuccin Mocha */
   --base:      #1e1e2e;  /* page background */
+  --mantle:    #181825;  /* header / footer bars */
+  --crust:     #11111b;  /* deepest surface */
   --surface0:  #313244;  /* cards / panels */
   --surface1:  #45475a;  /* buttons / hover surface */
   --surface2:  #585b70;  /* active / pressed */
   --overlay0:  #6c7086;  /* borders, dividers (used w/ alpha) */
   --overlay1:  #7f849c;  /* tertiary text, verse numbers */
+  --overlay2:  #9399b2;
   --subtext0:  #a6adc8;  /* secondary text */
   --subtext1:  #bac2de;
   --text:      #cdd6f4;  /* primary text */
@@ -39,6 +42,7 @@
   --accent-nt: var(--teal);
   --link:      var(--blue);
   --border:    rgba(108, 112, 134, 0.42); /* overlay0 @ ~42% (raised for AA separation) */
+  --border-strong: rgba(108, 112, 134, 0.55);
   --link-underline: rgba(137, 180, 250, 0.4);   /* blue @ 40% */
   --visited-underline: rgba(116, 199, 236, 0.4); /* sapphire @ 40% */
 
@@ -54,6 +58,66 @@
   --gap: 32px;
 }
 
+/* ---------- Light mode: Catppuccin Latte (follows system preference) ----------
+ * Mocha (above) is the dark default; when the OS/browser asks for light we
+ * swap the raw palette tokens to Latte. Semantic aliases (--bg, --panel,
+ * --text-main, --accent, ...) re-resolve automatically because they point at
+ * these tokens. */
+@media (prefers-color-scheme: light) {
+  :root {
+    --base:      #eff1f5;  /* page background */
+    --mantle:    #e6e9ef;
+    --crust:     #dce0e8;
+    --surface0:  #ccd0da;  /* cards / panels */
+    --surface1:  #bcc0cc;  /* buttons / hover surface */
+    --surface2:  #acb0be;  /* active / pressed */
+    --overlay0:  #9ca0b0;  /* borders, dividers */
+    --overlay1:  #8c8fa1;  /* tertiary text */
+    --overlay2:  #7c7f93;
+    --subtext0:  #6c6f85;  /* secondary text */
+    --subtext1:  #5c5f77;
+    --text:      #4c4f69;  /* primary text */
+
+    --lavender:  #7287fd;
+    --mauve:     #8839ef;
+    --teal:      #179299;
+    --blue:      #1e66f5;
+    --sapphire:  #209fb5;
+    --rosewater: #dc8a78;
+    --green:     #40a02b;
+    --peach:     #fe640b;
+    --red:       #d20f39;
+
+    --border:    rgba(156, 160, 176, 0.42);
+    --border-strong: rgba(156, 160, 176, 0.60);
+    --link-underline: rgba(30, 102, 245, 0.4);
+    --visited-underline: rgba(32, 159, 181, 0.4);
+  }
+  /* On a light surface, subpixel antialiasing renders glyphs fuller/richer
+   * (grayscale `antialiased`, correct for dark mode, looks thin on white).
+   * This is what makes system-UI sans read "fuller" on light sites. */
+  body {
+    -webkit-font-smoothing: subpixel-antialiased;
+  }
+}
+
+/* ---------- Skip link (a11y) ---------- */
+.skip-link {
+  position: absolute;
+  left: 8px;
+  top: -48px;
+  z-index: 100;
+  padding: 10px 16px;
+  background: var(--surface0);
+  color: var(--text-main);
+  border: 1px solid var(--border-strong);
+  border-radius: 0 0 var(--radius-pill) 0;
+  font-size: 0.85rem;
+  font-family: var(--ui-font);
+  text-decoration: none;
+  transition: top 120ms ease;
+}
+.skip-link:focus { top: 0; }
 
 /* ---------- Reset / base ---------- */
 html {
@@ -139,6 +203,20 @@ h2 {
 }
 
 /* ---------- Chapter heading ---------- */
+.chapterlabel {
+  text-align: center;
+  margin: 28px 0 32px;
+  padding-bottom: 16px;
+  font-family: var(--ui-font);
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--subtext1);
+  border-bottom: 1px solid var(--border);
+}
+.chapterlabel:first-child { margin-top: 12px; }
+.chapterlabel::before { content: "Chapter "; color: var(--subtext0); }
 
 /* ---------- Verses: one paragraph per verse ----------
  * Structure: <div class="p"><span class="verse" id="V1">1 </span>text...
@@ -253,60 +331,30 @@ ul.tnav {
  * The book-name pill links to this book's chapter list (its label matches
  * its destination). The all-books index is reached via the .home-mark
  * logo in the top-left corner (see below). */
-/* ---- Chapter-page nav (3 pills: book name, prev, next) ----
- * Layout: the book name is CENTRED in the reading column; prev + next are
- * grouped as a compact ‹ › pair at the RIGHT edge of the text content.
- * (The ☰ home-mark sits at the left edge — so the top bar reads as a
- * symmetric ☰ ... [book name] ... ‹ ›.)
- *
- * prev+next are taken OUT of flow (absolute) so the book name can be truly
- * centred in the column (not just centred in the leftover space). They're
- * compact chevron-only pills (44px hit area) so the pair fits in the small
- * space at the right of the book name even on mobile. The aria-labels
- * (already on the links for SR users) carry the semantics; the chevron
- * direction + right-edge position carry the visual affordance.
- *
- * Scoped via body:has(.home-mark) — chapter pages only. Book-TOC pages and
- * the copyright page have no .home-mark, so they stay on the flat base. */
-body:has(.home-mark) > ul.tnav {
-  display: flex;
+body:has(.home-mark) ul.tnav {
   flex-wrap: nowrap;
-  justify-content: center;  /* book name centred in the reading column */
-  align-items: center;
-  position: relative;       /* anchor for the absolute prev/next pair */
+  justify-content: stretch;  /* mobile-first: prev flush left, next flush right
+                              * (split bar — easy thumb reach to both ends).
+                              * Desktop overrides to a centred cluster below. */
 }
-body:has(.home-mark) > ul.tnav > li:nth-child(1) {  /* book name — in flow, centred */
-  flex: 0 0 auto;
-}
-/* The book-name text (0.85rem) sits in a 48px pill with align-items:center,
- * but its shorter cap height + descender area leave the VISUAL centre a
- * touch above the ‹ › chevrons (which are 1.15rem and fill their line-box).
- * Nudge the book-name pill down ~2px so its ink visually aligns with the
- * chevrons. (The pill itself stays 48px; this just shifts the ink down.) */
-body:has(.home-mark) > ul.tnav > li:nth-child(1) > a {
-  padding-top: 15px;  /* base is 11px; +4px nudge pushes the text DOWN so
-                          its visual centre aligns with the ‹ › chevrons.
-                          The book-name text (0.85rem) has a descender area
-                          that leaves its cap-height centre above the line-
-                          box centre, so it looks higher than the 1.15rem
-                          chevrons even when both are flex-centred in 48px
-                          pills. +4px brings the ink level with the chevrons. */
-}
-/* prev + next: compact chevron pills pinned to the right edge as a pair.
- * next at right:0; prev at right: <next width + gap>. Each pill is 44px
- * (min-width below) so the offset is predictable. top:50% + translateY
- * centres them vertically on the book name's band. */
-body:has(.home-mark) > ul.tnav > li:nth-child(2) {  /* prev */
-  position: absolute;
-  right: 48px;        /* next (44) + 4px gap */
-  top: 50%;
-  transform: translateY(-50%);
-}
-body:has(.home-mark) > ul.tnav > li:nth-child(3) {  /* next */
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
+body:has(.home-mark) ul.tnav > li:nth-child(1) { order: 2; } /* book name → centre */
+body:has(.home-mark) ul.tnav > li:nth-child(2) { order: 1; flex: 1 1 0; } /* prev → far left, grows */
+body:has(.home-mark) ul.tnav > li:nth-child(3) { order: 3; flex: 1 1 0; } /* next → far right, grows */
+
+/* Desktop (>= 601px): centred cluster — prev/next are a comfortable fixed
+ * width instead of growing across the whole 720px reading column (which
+ * made them oversized and lopsided). The whole row centres; the page's
+ * own side padding provides the breathing room. */
+@media (min-width: 601px) {
+  body:has(.home-mark) ul.tnav {
+    justify-content: center;
+    gap: 20px;
+  }
+  body:has(.home-mark) ul.tnav > li:nth-child(2),
+  body:has(.home-mark) ul.tnav > li:nth-child(3) {
+    flex: 0 0 auto;
+    min-width: 104px;   /* equal, predictable size regardless of book name */
+  }
 }
 
 /* Flat pills — NO boxes by default. The layout (prev flush left, next flush
@@ -316,101 +364,70 @@ body:has(.home-mark) > ul.tnav > li:nth-child(3) {  /* next */
  * column. On hover/focus a quiet flat surface (surface2 + pill radius,
  * matching the index book-list hover) appears — the affordance shows up
  * only when you interact. */
-body:has(.home-mark) > ul.tnav > li > a {
+body:has(.home-mark) ul.tnav > li > a {
   border-radius: var(--radius-pill);
   transition: background 120ms ease, color 120ms ease;
 }
-body:has(.home-mark) > ul.tnav > li > a:hover,
-body:has(.home-mark) > ul.tnav > li > a:focus-visible {
+body:has(.home-mark) ul.tnav > li > a:hover,
+body:has(.home-mark) ul.tnav > li > a:focus-visible {
+  background: var(--surface2);
   color: var(--text-main);
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 3px;
 }
-body:has(.home-mark) > ul.tnav > li:nth-child(2) > a,
-body:has(.home-mark) > ul.tnav > li:nth-child(3) > a {
+/* Light mode: surface2 (#acb0be) is the darkest Latte surface token and
+ * reads as a heavy gray block on the light page bg. Use surface1 (#bcc0cc)
+ * instead — lighter, still a clear hover affordance. (Dark mode keeps
+ * surface2 = #585b70, which is appropriately subtle on the dark base.) */
+@media (prefers-color-scheme: light) {
+  body:has(.home-mark) ul.tnav > li > a:hover,
+  body:has(.home-mark) ul.tnav > li > a:focus-visible {
+    background: var(--surface1);
+  }
+}
+body:has(.home-mark) ul.tnav > li:nth-child(2) > a,
+body:has(.home-mark) ul.tnav > li:nth-child(3) > a {
   color: var(--tertiary);   /* overlay1 on dark = 4.44:1 — dimmest AA-passing
                               token, genuinely "barely noticeable". Prev/next
                               are always the same + their position (far
                               left/right) conveys the affordance, so the text
                               is intentionally quiet; brightens on hover/focus. */
 }
-body:has(.home-mark) > ul.tnav > li:nth-child(2) > a:hover,
-body:has(.home-mark) > ul.tnav > li:nth-child(3) > a:hover,
-body:has(.home-mark) > ul.tnav > li:nth-child(2) > a:focus-visible,
-body:has(.home-mark) > ul.tnav > li:nth-child(3) > a:focus-visible {
+/* Light mode: the Latte palette has no AA-passing token as dim as dark's
+ * overlay1 (light overlay1 = 2.83:1, fails). subtext0 (4.37:1) is the
+ * dimmest acceptable token on the light page bg, so use it here instead —
+ * still subtle (weight 400), just AA-respecting. */
+@media (prefers-color-scheme: light) {
+  body:has(.home-mark) ul.tnav > li:nth-child(2) > a,
+  body:has(.home-mark) ul.tnav > li:nth-child(3) > a {
+    color: var(--subtext0);
+  }
+}
+body:has(.home-mark) ul.tnav > li:nth-child(2) > a:hover,
+body:has(.home-mark) ul.tnav > li:nth-child(3) > a:hover,
+body:has(.home-mark) ul.tnav > li:nth-child(2) > a:focus-visible,
+body:has(.home-mark) ul.tnav > li:nth-child(3) > a:focus-visible {
   color: var(--text-main);
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 3px;
 }
 
-/* prev/next: compact chevron-only pills. Hide the literal "<" / ">" text
- * and show a single ‹ / › chevron instead of "‹ Prev" / "Next ›" — the pair
- * is grouped at the right edge and the chevron direction carries the
- * affordance, so the words are dropped for compactness (fits the small
- * space at the right of the book name on mobile). aria-labels stay for SR. */
-body:has(.home-mark) > ul.tnav > li > a[aria-label="Previous chapter"],
-body:has(.home-mark) > ul.tnav > li > a[aria-label="Next chapter"] {
+/* Replace the bare "<" / ">" glyphs with a chevron + short word so the
+ * prev/next affordance is unambiguous (position + label), but keep it as
+ * plain text — no chrome. The aria-labels (already on the links for SR
+ * users) stay intact. */
+body:has(.home-mark) ul.tnav > li > a[aria-label="Previous chapter"],
+body:has(.home-mark) ul.tnav > li > a[aria-label="Next chapter"] {
   font-size: 0;       /* hide the literal "<" / ">" text */
   letter-spacing: 0;
-  min-width: 44px;    /* predictable 44px hit area; also makes the absolute
-                         prev offset (right:48px = next 44 + 4 gap) stable. */
 }
-body:has(.home-mark) > ul.tnav > li > a[aria-label="Previous chapter"]::before {
-  content: "‹";
-  font-size: 1.15rem;
-  font-weight: 500;
-  line-height: 1;
-}
-body:has(.home-mark) > ul.tnav > li > a[aria-label="Next chapter"]::before {
-  content: "›";
-  font-size: 1.15rem;
-  font-weight: 500;
-  line-height: 1;
-}
-
-/* Chapter pages: the subtitle (.mt2, .mt3) and book name (.mt) are divs
- * that form the chapter title. Some books have multi-part titles (e.g.,
- * Sirach: "THE WISDOM OF JESUS THE SON OF SIRACH, / OR / ECCLESIASTICUS").
- * Make them inline-block so they flow as a phrase, with letter-spacing
- * for air, muted color (less contrasting than body text), and small gaps
- * between title lines. The large space before the text body is handled
- * by margin-top on the first .p element below. */
-body:has(.home-mark) > main .mt2,
-body:has(.home-mark) > main .mt3,
-body:has(.home-mark) > main .mt {
-  display: inline-block;
-  font-size: 1.4rem;
+body:has(.home-mark) ul.tnav > li > a[aria-label="Previous chapter"]::before {
+  content: "‹ Prev";
+  font-size: 0.85rem;
+  letter-spacing: 0.01em;
   font-weight: 400;
-  font-family: "Gentium Plus", Georgia, serif;
-  color: var(--lavender);
-  text-align: left;
-  margin: 0;
-  padding: 0;
-  letter-spacing: 0.02em;
-  text-transform: none;
 }
-/* Top margin on the first title element. */
-body:has(.home-mark) > main .mt2 {
-  margin-top: 16px;
-}
-body:has(.home-mark) > main .mt:first-of-type {
-  margin-top: 16px;
-}
-/* Inline-block doesn't preserve whitespace between elements, so add
- * a small right margin to create the gap between words. */
-body:has(.home-mark) > main .mt,
-body:has(.home-mark) > main .mt2,
-body:has(.home-mark) > main .mt3 {
-  margin-right: 0.25em;
-}
-/* Space after each title line. Using a consistent value since
- * :has(+ .p) selector isn't reliably supported. */
-body:has(.home-mark) > main .mt,
-body:has(.home-mark) > main .mt2,
-body:has(.home-mark) > main .mt3 {
-  margin-bottom: 20px;
+body:has(.home-mark) ul.tnav > li > a[aria-label="Next chapter"]::before {
+  content: "Next ›";
+  font-size: 0.85rem;
+  letter-spacing: 0.01em;
+  font-weight: 400;
 }
 
 /* ---------- Home mark (top-left corner link to the all-books index) ----------
@@ -445,49 +462,30 @@ body:has(.home-mark) > main .mt3 {
                         centre offset, visually aligned. The 44px box is the
                         AA touch target; the glyph inside is ~17px so it
                         stays visually quiet. */
-  left: 16px;         /* align with the TEXT CONTENT's left edge. <body>
-                        has padding:0 16px, so its content box (where the
-                        text + nav live) starts 16px in from the body's
-                        outer left edge. left:16px (relative to body's
-                        padding box = its outer edge) puts the ☰ at the
-                        text content's left edge — symmetric with the ‹ ›
-                        pair at the text content's right edge. (Mobile
-                        overrides to 3mm below since body padding is 0
-                        there.) */
+  left: 0;
   z-index: 50;
   display: inline-flex;
   align-items: center;
-  justify-content: flex-start;  /* left-align the ☰ glyph at the box's
-                                  left edge so the GLYPH sits on the text
-                                  content's left vertical line (not just
-                                  the invisible 44px hit-area box). The
-                                  44px hit area extends right from the
-                                  glyph. */
-  padding-left: 0;        /* glyph flush with the box's left edge */
+  justify-content: center;
   width: 44px;          /* 44px hit area (AA touch target) */
   height: 44px;
-  padding-top: 2px;     /* nudge the ☰ glyph down ~2px — its font metrics
-                           leave the ink sitting slightly high in the em
-                           box, so geometric centring looks off. This makes
-                           the glyph sit smack in the visual centre of the
-                           hover box. */
   text-decoration: none;
   font-size: 1rem;
   line-height: 1;
   color: var(--overlay1);   /* dim by default — subtle, not a loud logo */
   border-radius: var(--radius-pill);
-  transition: color 120ms ease;
+  transition: color 120ms ease, background 120ms ease;
 }
-/* Hover: underline instead of a background pill. The 44px box remains
- * the AA touch target; the thin underline (1px, offset 3px) replaces
- * the old 36×36 rounded surface. */
 .home-mark:hover,
 .home-mark:focus-visible {
   color: var(--accent);
+  background: var(--surface2);
   outline: none;
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 3px;
+}
+@media (prefers-color-scheme: light) {
+  .home-mark { color: var(--subtext0); }   /* AA-respecting on light bg */
+  .home-mark:hover,
+  .home-mark:focus-visible { background: var(--surface1); }
 }
 /* On mobile nudge the mark in 3mm so it clears the screen edge with the
  * same clearance as the nav pills (the reading column is full-bleed on
@@ -555,10 +553,8 @@ main#main > div > ul li a.nn {
 main#main > div > ul li a.oo:hover,
 main#main > div > ul li a.aa:hover,
 main#main > div > ul li a.nn:hover {
+  background: var(--surface2);
   color: var(--text-main);
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 3px;
 }
 main#main > div > ul li a.oo:visited,
 main#main > div > ul li a.aa:visited,
@@ -570,17 +566,26 @@ li.sep {
   grid-column: 1 / -1;
   margin: 12px 4px 4px;
   padding: 16px 14px 8px;
-  text-align: left;
+  border-top: 1px solid var(--border);
+  text-align: center;
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   font-size: 0.72rem;
   color: var(--tertiary);
 }
-li.sep:first-child { margin-top: 4px; padding-top: 8px; }
-li.sep span { color: var(--accent-ot); }
+li.sep:first-child { border-top: none; margin-top: 4px; padding-top: 8px; }
+/* OT = first section divider (mauve), NT = second (teal). A small left
+ * accent dot reinforces the hue without shouting. */
+li.sep span { color: var(--tertiary); position: relative; padding-left: 16px; }
+li.sep span::before {
+  content: ""; position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+  width: 6px; height: 6px; border-radius: 50%; background: var(--overlay0);
+}
+li.sep:first-child span { color: var(--accent-ot); }
+li.sep:first-child span::before { background: var(--accent-ot); }
 li.sep:not(:first-child) span { color: var(--accent-nt); }
-
+li.sep:not(:first-child) span::before { background: var(--accent-nt); }
 
 /* ---------- Index footer note card ---------- */
 .mainindex {
@@ -608,32 +613,41 @@ li.sep:not(:first-child) span { color: var(--accent-nt); }
  * <h1><a href='../index.html'>Genesis</a></h1> followed by several
  * <ul class='tnav'> chapter-number grids. One <h1> per page (the book name);
  * the translation/app name is a non-heading site-title label above it. */
-/* Chapter index pages (book TOC) */
-body > main h1 {
-  font-size: 1.6rem; font-weight: 600; color: var(--text-main);
-  letter-spacing: -0.01em; padding: 24px 0 16px;
+body.chlist { padding-bottom: 32px; }
+body.chlist .site-title {
+  margin: 0;
+  padding: 24px 0 0;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--tertiary);
 }
-body > main ul.tnav {
+body.chlist .site-title a:link,
+body.chlist .site-title a:visited { color: var(--tertiary); text-decoration: none; }
+body.chlist .site-title a:hover { color: var(--accent); text-decoration: none; }
+body.chlist h1 {
+  font-size: 1.6rem; font-weight: 600; color: var(--text-main);
+  letter-spacing: -0.01em; padding: 2px 0 8px;
+  border-bottom: 1px solid var(--border); margin: 0 0 4px;
+}
+body.chlist {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  margin: 16px auto;
+  padding: 4px 16px 24px;
+}
+body.chlist ul.tnav {
   margin: 10px 0;
   background: transparent;
   border: none;
   border-radius: 0;
   padding: 0;
   box-shadow: none;
-  display: block;
-  text-align: center;
 }
-body > main ul.tnav a, body > main ul.tnav a:link {
+body.chlist ul.tnav a, body.chlist ul.tnav a:link {
   min-width: 2.4em; text-align: center;
-}
-/* Chapter index pages: the ☰ home-mark is at top:0 but there's no top
- * tnav to align with. Remove main's top margin/padding so the h1 sits
- * on the same band as the home-mark. Selector only matches when main
- * immediately follows .home-mark (chapter index pages); on chapter pages
- * the tnav sits between them so this doesn't apply. */
-body > .home-mark + main.main {
-  margin-top: 0;
-  padding-top: 0;
 }
 
 /* ---------- Mobile: <=3mm side margin, full-bleed reading surface ----------
@@ -661,46 +675,36 @@ body > .home-mark + main.main {
     box-shadow: none;
   }
 
+  /* Book table-of-contents page (GEN.htm, MAT.htm, ...). */
+  body.chlist {
+    margin-left: 0;
+    margin-right: 0;
+    padding: 4px 3mm 24px;
+    border-left: none;
+    border-right: none;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  body.chlist h1 { padding-left: 0; padding-right: 0; }
 
   /* Top / bottom chapter-nav rows on chapter pages (body > ul.tnav):
-   *   - 3mm side clearance (for book-TOC chapter grids, which are in-flow;
-   *     chapter-page prev/next are absolute and get their own inset below).
-   *   - The ☰ home-mark is at the LEFT edge on the same band, but the book
-   *     name is centred (not flush left), so there's no overlap to clear.
+   *   - 3mm side clearance so the grown prev/next buttons sit 3mm from the
+   *     screen edge (easy thumb reach, never touching the edge).
+   *   - The home-mark (☰) is on the SAME vertical band as the TOP nav row
+   *     (see .home-mark), flush with the column's left edge. On mobile the
+   *     nav is a full-width split bar with [‹ Prev] flush left — which
+   *     would overlap the ☰. Push the FIRST tnav's left edge past the ☰
+   *     (44px wide + a little gap) so the prev pill clears it. Desktop
+   *     doesn't need this: the nav is centred, the ☰ is at the column's
+   *     left edge, no overlap.
    *   - The bottom tnav's gap is handled by body padding-bottom + the
    *     last-of-type margin-zero rule in base styles. */
   body > ul.tnav {
     padding-left: 3mm;
     padding-right: 3mm;
   }
-  /* Chapter-page prev/next are absolutely positioned (right:0 / right:48px
-   * in the base rule), which on a full-bleed mobile ul would put them at
-   * the screen edge. Inset them 3mm so they align with the text content's
-   * right edge. */
-  body:has(.home-mark) > ul.tnav > li:nth-child(3) { right: 3mm; }
-  body:has(.home-mark) > ul.tnav > li:nth-child(2) { right: calc(3mm + 48px); }
-  /* The book-name pill is centred in the full column, but on a narrow phone
-   * the longest names ("Wisdom of Solomon", 17 chars) would collide with
-   * the ‹ › pair pinned at the right. Shrink the book-name pill on mobile:
-   * tighter horizontal padding + a slightly smaller font, and a max-width
-   * with ellipsis as a safety net so it can never overlap the ‹ › hit area.
-   * The book name is centred at 50% of the column, so its right edge reaches
-   * ~50% + maxW/2; to clear the ‹ › pair (~100px from the right edge) the
-   * max-width must be <= (100vw - 2*100px - buffer). On a 390px phone that's
-   * ~174px — "Wisdom of Solomon" (136px at 0.78rem) fits untruncated; on a
-   * 320px phone it truncates to "Wisdom of…" rather than overlapping. */
-  body:has(.home-mark) > ul.tnav > li:nth-child(1) > a {
-    display: block;      /* text-overflow:ellipsis needs a block box, not the
-                           base inline-flex — switch so the truncation
-                           shows a proper "…" instead of a hard clip. */
-    text-align: center;  /* keep the book name centred within the pill */
-    padding-left: 6px;
-    padding-right: 6px;
-    font-size: 0.78rem;
-    max-width: calc(100vw - 216px);  /* 2×(☰ 56 / ‹› 100) + buffer */
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  body:has(.home-mark) ul.tnav:first-of-type {
+    padding-left: 56px;   /* clear the 44px ☰ + 12px gap */
   }
 
   /* Index page: book list goes full-bleed; link text 3mm from each edge.
