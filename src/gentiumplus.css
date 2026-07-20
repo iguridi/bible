@@ -426,10 +426,13 @@ body:has(.home-mark) > ul.tnav > li > a[aria-label="Next chapter"]::before {
   line-height: 1;
 }
 
-/* Chapter pages: the subtitle (.mt2, .mt3) and book name (.mt) are three
- * stacked divs that read as one phrase: "The First Book of Moses, Commonly
- * Called Genesis". Make them inline so they flow as a single left-aligned
- * line, aligned with the text content (inside main's padding). */
+/* Chapter pages: the subtitle (.mt2, .mt3) and book name (.mt) are divs
+ * that form the chapter title. Some books have multi-part titles (e.g.,
+ * Sirach: "THE WISDOM OF JESUS THE SON OF SIRACH, / OR / ECCLESIASTICUS").
+ * Make them inline-block so they flow as a phrase, with letter-spacing
+ * for air, muted color (less contrasting than body text), and small gaps
+ * between title lines. The large space before the text body is handled
+ * by margin-top on the first .p element below. */
 body:has(.home-mark) > main .mt2,
 body:has(.home-mark) > main .mt3,
 body:has(.home-mark) > main .mt {
@@ -437,15 +440,18 @@ body:has(.home-mark) > main .mt {
   font-size: 1.4rem;
   font-weight: 400;
   font-family: "Gentium Plus", Georgia, serif;
-  color: var(--text-main);
+  color: var(--subtext1);
   text-align: left;
   margin: 0;
   padding: 0;
-  letter-spacing: normal;
+  letter-spacing: 0.02em;
   text-transform: none;
 }
-/* Vertical spacing around the title phrase. */
+/* Top margin on the first title element. */
 body:has(.home-mark) > main .mt2 {
+  margin-top: 16px;
+}
+body:has(.home-mark) > main .mt:first-of-type {
   margin-top: 16px;
 }
 /* Inline-block doesn't preserve whitespace between elements, so add
@@ -454,8 +460,15 @@ body:has(.home-mark) > main .mt2,
 body:has(.home-mark) > main .mt3 {
   margin-right: 0.25em;
 }
-body:has(.home-mark) > main .mt {
-  margin-bottom: 32px;
+/* Small gap between title lines (when title spans multiple divs). */
+body:has(.home-mark) > main .mt,
+body:has(.home-mark) > main .mt2,
+body:has(.home-mark) > main .mt3 {
+  margin-bottom: 4px;
+}
+/* Large space between the title block and the text body. */
+body:has(.home-mark) > main .p:first-of-type {
+  margin-top: 28px;
 }
 
 /* ---------- Home mark (top-left corner link to the all-books index) ----------
