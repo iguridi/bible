@@ -338,6 +338,20 @@ body:has(.home-mark) ul.tnav {
 body:has(.home-mark) ul.tnav > li:nth-child(1) {  /* book name — in flow, centred */
   flex: 0 0 auto;
 }
+/* The book-name text (0.85rem) sits in a 48px pill with align-items:center,
+ * but its shorter cap height + descender area leave the VISUAL centre a
+ * touch above the ‹ › chevrons (which are 1.15rem and fill their line-box).
+ * Nudge the book-name pill down ~2px so its ink visually aligns with the
+ * chevrons. (The pill itself stays 48px; this just shifts the ink down.) */
+body:has(.home-mark) ul.tnav > li:nth-child(1) > a {
+  padding-top: 15px;  /* base is 11px; +4px nudge pushes the text DOWN so
+                          its visual centre aligns with the ‹ › chevrons.
+                          The book-name text (0.85rem) has a descender area
+                          that leaves its cap-height centre above the line-
+                          box centre, so it looks higher than the 1.15rem
+                          chevrons even when both are flex-centred in 48px
+                          pills. +4px brings the ink level with the chevrons. */
+}
 /* prev + next: compact chevron pills pinned to the right edge as a pair.
  * next at right:0; prev at right: <next width + gap>. Each pill is 44px
  * (min-width below) so the offset is predictable. top:50% + translateY
@@ -476,7 +490,13 @@ body:has(.home-mark) ul.tnav > li > a[aria-label="Next chapter"]::before {
   z-index: 50;
   display: inline-flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;  /* left-align the ☰ glyph at the box's
+                                  left edge so the GLYPH sits on the text
+                                  content's left vertical line (not just
+                                  the invisible 44px hit-area box). The
+                                  44px hit area extends right from the
+                                  glyph. */
+  padding-left: 0;        /* glyph flush with the box's left edge */
   width: 44px;          /* 44px hit area (AA touch target) */
   height: 44px;
   padding-top: 2px;     /* nudge the ☰ glyph down ~2px — its font metrics
@@ -489,13 +509,40 @@ body:has(.home-mark) ul.tnav > li > a[aria-label="Next chapter"]::before {
   line-height: 1;
   color: var(--overlay1);   /* dim by default — subtle, not a loud logo */
   border-radius: var(--radius-pill);
-  transition: color 120ms ease, background 120ms ease;
+  transition: color 120ms ease;
+}
+/* The hover SURFACE is a separate pseudo-element centered on the glyph,
+ * not the full 44px hit-area box. The glyph is flush-left in the box
+ * (so it aligns with the text's left vertical line), but the 44px box
+ * extends 44px to the right of the glyph — if we bg'd the box on hover,
+ * the glyph would sit at the LEFT edge of the hover surface, looking
+ * off-centre. Instead: a 36×36 rounded pill centered on the glyph's
+ * centre (~7.5px from the box's left edge, since the glyph is ~15px
+ * wide). The 44px box remains the hit area (AA touch target); the
+ * visible hover surface is centred on the ink. */
+.home-mark::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 7.5px;          /* glyph centre: the glyph is ~15px wide, flush
+                           left in the box, so its centre is at ~7.5px */
+  transform: translate(-50%, -50%);
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  transition: background 120ms ease;
+  z-index: -1;          /* behind the glyph, within the parent's stacking
+                           context (parent has z-index:50) */
 }
 .home-mark:hover,
 .home-mark:focus-visible {
   color: var(--accent);
-  background: var(--surface2);
   outline: none;
+}
+.home-mark:hover::after,
+.home-mark:focus-visible::after {
+  background: var(--surface2);
 }
 /* Light mode: surface2 (#acb0be) and surface1 (#bcc0cc) are BOTH too dark
  * a hover on the light page bg — they read as heavy gray blocks. Use a
@@ -504,8 +551,8 @@ body:has(.home-mark) ul.tnav > li > a[aria-label="Next chapter"]::before {
  * = #585b70, appropriately subtle on the dark base.) */
 @media (prefers-color-scheme: light) {
   .home-mark { color: var(--subtext0); }   /* AA-respecting on light bg */
-  .home-mark:hover,
-  .home-mark:focus-visible { background: rgba(156, 160, 176, 0.26); }
+  .home-mark:hover::after,
+  .home-mark:focus-visible::after { background: rgba(156, 160, 176, 0.26); }
 }
 /* On mobile nudge the mark in 3mm so it clears the screen edge with the
  * same clearance as the nav pills (the reading column is full-bleed on
