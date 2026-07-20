@@ -448,7 +448,7 @@ body:has(.home-mark) > main .mt2 {
   margin-top: 16px;
 }
 body:has(.home-mark) > main .mt {
-  margin-bottom: 12px;
+  margin-bottom: 32px;
 }
 
 /* ---------- Home mark (top-left corner link to the all-books index) ----------
