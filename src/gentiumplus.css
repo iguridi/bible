@@ -524,11 +524,11 @@ li.sep {
   grid-column: 1 / -1;
   margin: 12px 4px 4px;
   padding: 16px 14px 8px;
-  text-align: left;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  font-size: 0.72rem;
+  text-align: center;
+  font-family: "Gentium Plus", Georgia, serif;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  font-size: 1.4rem;
   color: var(--tertiary);
 }
 li.sep:first-child { margin-top: 4px; padding-top: 8px; }
