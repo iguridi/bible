@@ -368,19 +368,10 @@ body:has(.home-mark) > ul.tnav > li > a {
 }
 body:has(.home-mark) > ul.tnav > li > a:hover,
 body:has(.home-mark) > ul.tnav > li > a:focus-visible {
-  background: var(--surface2);
   color: var(--text-main);
-}
-/* Light mode: surface2 (#acb0be) AND surface1 (#bcc0cc) are both too dark
- * a hover on the light page bg — they read as heavy gray blocks. Use a
- * light alpha tint of overlay0 (~26%) instead: a quiet warm-gray wash
- * that reads as a subtle highlight, not a loud block. (Dark mode keeps
- * surface2 = #585b70, appropriately subtle on the dark base.) */
-@media (prefers-color-scheme: light) {
-  body:has(.home-mark) > ul.tnav > li > a:hover,
-  body:has(.home-mark) > ul.tnav > li > a:focus-visible {
-    background: rgba(156, 160, 176, 0.26);
-  }
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
 }
 body:has(.home-mark) > ul.tnav > li:nth-child(2) > a,
 body:has(.home-mark) > ul.tnav > li:nth-child(3) > a {
@@ -405,6 +396,9 @@ body:has(.home-mark) > ul.tnav > li:nth-child(3) > a:hover,
 body:has(.home-mark) > ul.tnav > li:nth-child(2) > a:focus-visible,
 body:has(.home-mark) > ul.tnav > li:nth-child(3) > a:focus-visible {
   color: var(--text-main);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
 }
 
 /* prev/next: compact chevron-only pills. Hide the literal "<" / ">" text
@@ -497,48 +491,21 @@ body:has(.home-mark) > ul.tnav > li > a[aria-label="Next chapter"]::before {
   border-radius: var(--radius-pill);
   transition: color 120ms ease;
 }
-/* The hover SURFACE is a separate pseudo-element centered on the glyph,
- * not the full 44px hit-area box. The glyph is flush-left in the box
- * (so it aligns with the text's left vertical line), but the 44px box
- * extends 44px to the right of the glyph — if we bg'd the box on hover,
- * the glyph would sit at the LEFT edge of the hover surface, looking
- * off-centre. Instead: a 36×36 rounded pill centered on the glyph's
- * centre (~7.5px from the box's left edge, since the glyph is ~15px
- * wide). The 44px box remains the hit area (AA touch target); the
- * visible hover surface is centred on the ink. */
-.home-mark::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 7.5px;          /* glyph centre: the glyph is ~15px wide, flush
-                           left in the box, so its centre is at ~7.5px */
-  transform: translate(-50%, -50%);
-  width: 36px;
-  height: 36px;
-  border-radius: var(--radius-pill);
-  background: transparent;
-  transition: background 120ms ease;
-  z-index: -1;          /* behind the glyph, within the parent's stacking
-                           context (parent has z-index:50) */
-}
+/* Hover: underline instead of a background pill. The 44px box remains
+ * the AA touch target; the thin underline (1px, offset 3px) replaces
+ * the old 36×36 rounded surface. */
 .home-mark:hover,
 .home-mark:focus-visible {
   color: var(--accent);
   outline: none;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
 }
-.home-mark:hover::after,
-.home-mark:focus-visible::after {
-  background: var(--surface2);
-}
-/* Light mode: surface2 (#acb0be) and surface1 (#bcc0cc) are BOTH too dark
- * a hover on the light page bg — they read as heavy gray blocks. Use a
- * light alpha tint of overlay0 (~26%) instead: a quiet warm-gray wash that
- * reads as a subtle highlight, not a loud block. (Dark mode keeps surface2
- * = #585b70, appropriately subtle on the dark base.) */
+/* Light mode: underline is the same in both modes — no background to
+ * adjust. */
 @media (prefers-color-scheme: light) {
   .home-mark { color: var(--subtext0); }   /* AA-respecting on light bg */
-  .home-mark:hover::after,
-  .home-mark:focus-visible::after { background: rgba(156, 160, 176, 0.26); }
 }
 /* On mobile nudge the mark in 3mm so it clears the screen edge with the
  * same clearance as the nav pills (the reading column is full-bleed on
