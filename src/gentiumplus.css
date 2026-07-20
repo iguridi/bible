@@ -433,7 +433,7 @@ body:has(.home-mark) > ul.tnav > li > a[aria-label="Next chapter"]::before {
 body:has(.home-mark) > main .mt2,
 body:has(.home-mark) > main .mt3,
 body:has(.home-mark) > main .mt {
-  display: inline;
+  display: inline-block;
   font-size: 1.25rem;
   font-weight: 600;
   color: var(--text-main);
@@ -446,6 +446,12 @@ body:has(.home-mark) > main .mt {
 /* Vertical spacing around the title phrase. */
 body:has(.home-mark) > main .mt2 {
   margin-top: 16px;
+}
+/* Inline-block doesn't preserve whitespace between elements, so add
+ * a small right margin to create the gap between words. */
+body:has(.home-mark) > main .mt2,
+body:has(.home-mark) > main .mt3 {
+  margin-right: 0.25em;
 }
 body:has(.home-mark) > main .mt {
   margin-bottom: 32px;
