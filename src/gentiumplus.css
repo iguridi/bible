@@ -131,6 +131,9 @@ html {
 }
 html, body { margin: 0 auto; }
 body {
+  position: relative;   /* anchor for the absolutely-positioned .home-mark
+                           * so it sits at the left edge of the centred
+                           * reading column, not the viewport edge. */
   max-width: 720px;
   background-color: var(--bg);
   color: var(--text-main);
@@ -428,30 +431,38 @@ body:has(.home-mark) ul.tnav > li > a[aria-label="Next chapter"]::before {
 }
 
 /* ---------- Home mark (top-left corner link to the all-books index) ----------
- * A subtle ☰ (list/contents glyph — the universal 'index' affordance) in
- * the top-left corner of chapter pages only (injected before the top tnav).
- * It's the 'home / all books' affordance — clicking it goes straight to the
- * index. Quiet by default; brightens to the accent on hover/focus.
+ * A subtle ☰ (list/contents glyph — the universal 'index' affordance) that
+ * links straight to the all-books index. Quiet by default; brightens to
+ * the accent on hover/focus.
  *
- * ALIGNMENT: it sits on the SAME vertical axis as the nav-row text, not
- * floating above it. We do this by NOT using position: fixed; instead the
- * home-mark is the first item in a flex row that contains it + the top
- * tnav... no — simpler: keep it position: fixed but vertically centre it on
- * the top tnav's band (top = tnav's top + half a pill height minus half the
- * mark height). Because the tnav's top depends on mobile vs desktop, use a
- * CSS custom approach: align the mark's centre to the first nav pill's
- * centre. The cleanest expression: pin the mark's top so its vertical
- * centre equals the prev pill's vertical centre. Prev pill = 48px tall,
- * starts at margin-top 44px → centre at 44 + 24 = 68px. Mark = 24px tall →
- * top = 68 - 12 = 56px. (We shrink the mark box to 24px so it matches the
- * nav text height rather than being a big 32px corner badge.) */
+ * PLACEMENT: it sits flush against the LEFT EDGE OF THE READING COLUMN,
+ * vertically centred on the top nav row — NOT pinned to the viewport edge.
+ * On a wide desktop the reading column is centred (body max-width 720 +
+ * auto margins); pinning to the viewport would strand the icon alone in
+ * the left margin, disconnected from the text. So: position: absolute
+ * relative to <body> (the centred column), left: 0 = the column's left
+ * edge. (body gets position: relative below.) The icon is on the SAME
+ * vertical band as the [‹ Prev] [Book] [Next ›] pills (centre y=68), so
+ * it reads as part of the top bar, not as a separate floating corner.
+ *   - Mobile: the column is full-width, so left:0 = screen edge (the 3mm
+ *     side clearance is handled by the tnav's padding; the mark sits at
+ *     the very edge as a corner mark).
+ *   - Desktop: left:0 = left edge of the 720px column, so the icon stays
+ *     anchored to the text block, not the viewport.
+ * No extra margin-top on the tnav (the icon is on the nav's band, not
+ * above it) — that kills the leftover space above the nav. */
 .home-mark {
-  position: fixed;
-  top: 46px;          /* vertically centred on the prev pill's band:
-                        pill top=44, pill h=48 → centre=68; mark box h=44
-                        → top = 68 - 22 = 46. (44px box = AA touch target;
-                        the glyph inside is ~17px so it stays visually quiet.) */
-  left: 4px;
+  position: absolute;
+  top: 0;             /* sit on the same band as the top nav row. The nav's
+                        computed top is at body's top edge (the base ul.tnav
+                        margin-top of 20px collapses with body's 0 top
+                        padding), so top:0 (relative to body, which is the
+                        containing block) puts the mark's top at the nav's
+                        top. The 44px mark box vs the 48px nav pill -> 2px
+                        centre offset, visually aligned. The 44px box is the
+                        AA touch target; the glyph inside is ~17px so it
+                        stays visually quiet. */
+  left: 0;
   z-index: 50;
   display: inline-flex;
   align-items: center;
@@ -476,19 +487,11 @@ body:has(.home-mark) ul.tnav > li > a[aria-label="Next chapter"]::before {
   .home-mark:hover,
   .home-mark:focus-visible { background: var(--surface1); }
 }
-/* On mobile the home-mark sits in the 3mm side-margin zone; nudge it in
- * slightly so it clears the screen edge with the same clearance as the
- * nav pills, and align it to the mobile nav band (prev pill centre). */
+/* On mobile nudge the mark in 3mm so it clears the screen edge with the
+ * same clearance as the nav pills (the reading column is full-bleed on
+ * mobile, so left:0 would be the screen edge). */
 @media (max-width: 600px) {
-  .home-mark { left: 0; top: 46px; }
-}
-/* The fixed home-mark (24px tall, centred on the top nav band) does NOT
- * overlap the in-flow top tnav anymore (it's beside it, on the same band),
- * but the top tnav still needs a little top margin so the row isn't glued
- * to the top of the viewport. Scope via body:has(.home-mark) so
- * book-TOC/copyright pages are unaffected. */
-body:has(.home-mark) ul.tnav:first-of-type {
-  margin-top: 44px;
+  .home-mark { left: 3mm; }
 }
 
 /* ---------- Book-list links (index page) ---------- */
@@ -687,16 +690,22 @@ body.chlist ul.tnav a, body.chlist ul.tnav a:link {
   /* Top / bottom chapter-nav rows on chapter pages (body > ul.tnav):
    *   - 3mm side clearance so the grown prev/next buttons sit 3mm from the
    *     screen edge (easy thumb reach, never touching the edge).
-   *   - Extra top margin so the FIRST tnav clears the fixed home-mark logo
-   *     in the top-left corner (32px tall at top:6px → bottom ~38px). The
-   *     bottom tnav keeps the default gap (handled by body padding-bottom +
-   *     the last-of-type margin-zero rule in base styles — margin collapse
-   *     would otherwise eat the last nav's margin-bottom). */
+   *   - The home-mark (☰) is on the SAME vertical band as the TOP nav row
+   *     (see .home-mark), flush with the column's left edge. On mobile the
+   *     nav is a full-width split bar with [‹ Prev] flush left — which
+   *     would overlap the ☰. Push the FIRST tnav's left edge past the ☰
+   *     (44px wide + a little gap) so the prev pill clears it. Desktop
+   *     doesn't need this: the nav is centred, the ☰ is at the column's
+   *     left edge, no overlap.
+   *   - The bottom tnav's gap is handled by body padding-bottom + the
+   *     last-of-type margin-zero rule in base styles. */
   body > ul.tnav {
     padding-left: 3mm;
     padding-right: 3mm;
   }
-  body:has(.home-mark) ul.tnav:first-of-type { margin-top: 44px; }
+  body:has(.home-mark) ul.tnav:first-of-type {
+    padding-left: 56px;   /* clear the 44px ☰ + 12px gap */
+  }
 
   /* Index page: book list goes full-bleed; link text 3mm from each edge.
    *   - h1 sits directly in #main (no .main card), so it needs its own 3mm.
