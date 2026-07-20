@@ -103,7 +103,11 @@
 
 /* ---------- Skip link (a11y) ---------- */
 .skip-link {
-  position: absolute;
+  position: fixed;      /* relative to the VIEWPORT, not <body> — body is
+                           position:relative (to anchor the .home-mark),
+                           which would otherwise shift this link's
+                           containing block and leave a sliver of it
+                           visible at the top edge. */
   left: 8px;
   top: -48px;
   z-index: 100;
@@ -373,14 +377,15 @@ body:has(.home-mark) ul.tnav > li > a:focus-visible {
   background: var(--surface2);
   color: var(--text-main);
 }
-/* Light mode: surface2 (#acb0be) is the darkest Latte surface token and
- * reads as a heavy gray block on the light page bg. Use surface1 (#bcc0cc)
- * instead — lighter, still a clear hover affordance. (Dark mode keeps
- * surface2 = #585b70, which is appropriately subtle on the dark base.) */
+/* Light mode: surface2 (#acb0be) AND surface1 (#bcc0cc) are both too dark
+ * a hover on the light page bg — they read as heavy gray blocks. Use a
+ * light alpha tint of overlay0 (~26%) instead: a quiet warm-gray wash
+ * that reads as a subtle highlight, not a loud block. (Dark mode keeps
+ * surface2 = #585b70, appropriately subtle on the dark base.) */
 @media (prefers-color-scheme: light) {
   body:has(.home-mark) ul.tnav > li > a:hover,
   body:has(.home-mark) ul.tnav > li > a:focus-visible {
-    background: var(--surface1);
+    background: rgba(156, 160, 176, 0.26);
   }
 }
 body:has(.home-mark) ul.tnav > li:nth-child(2) > a,
@@ -469,6 +474,11 @@ body:has(.home-mark) ul.tnav > li > a[aria-label="Next chapter"]::before {
   justify-content: center;
   width: 44px;          /* 44px hit area (AA touch target) */
   height: 44px;
+  padding-top: 2px;     /* nudge the ☰ glyph down ~2px — its font metrics
+                           leave the ink sitting slightly high in the em
+                           box, so geometric centring looks off. This makes
+                           the glyph sit smack in the visual centre of the
+                           hover box. */
   text-decoration: none;
   font-size: 1rem;
   line-height: 1;
@@ -482,10 +492,15 @@ body:has(.home-mark) ul.tnav > li > a[aria-label="Next chapter"]::before {
   background: var(--surface2);
   outline: none;
 }
+/* Light mode: surface2 (#acb0be) and surface1 (#bcc0cc) are BOTH too dark
+ * a hover on the light page bg — they read as heavy gray blocks. Use a
+ * light alpha tint of overlay0 (~26%) instead: a quiet warm-gray wash that
+ * reads as a subtle highlight, not a loud block. (Dark mode keeps surface2
+ * = #585b70, appropriately subtle on the dark base.) */
 @media (prefers-color-scheme: light) {
   .home-mark { color: var(--subtext0); }   /* AA-respecting on light bg */
   .home-mark:hover,
-  .home-mark:focus-visible { background: var(--surface1); }
+  .home-mark:focus-visible { background: rgba(156, 160, 176, 0.26); }
 }
 /* On mobile nudge the mark in 3mm so it clears the screen edge with the
  * same clearance as the nav pills (the reading column is full-bleed on
