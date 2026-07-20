@@ -101,28 +101,6 @@
   }
 }
 
-/* ---------- Skip link (a11y) ---------- */
-.skip-link {
-  position: fixed;      /* relative to the VIEWPORT, not <body> — body is
-                           position:relative (to anchor the .home-mark),
-                           which would otherwise shift this link's
-                           containing block and leave a sliver of it
-                           visible at the top edge. */
-  left: 8px;
-  top: -48px;
-  z-index: 100;
-  padding: 10px 16px;
-  background: var(--surface0);
-  color: var(--text-main);
-  border: 1px solid var(--border-strong);
-  border-radius: 0 0 var(--radius-pill) 0;
-  font-size: 0.85rem;
-  font-family: var(--ui-font);
-  text-decoration: none;
-  transition: top 120ms ease;
-}
-.skip-link:focus { top: 0; }
-
 /* ---------- Reset / base ---------- */
 html {
   height: 100%;
@@ -335,30 +313,46 @@ ul.tnav {
  * The book-name pill links to this book's chapter list (its label matches
  * its destination). The all-books index is reached via the .home-mark
  * logo in the top-left corner (see below). */
+/* ---- Chapter-page nav (3 pills: book name, prev, next) ----
+ * Layout: the book name is CENTRED in the reading column; prev + next are
+ * grouped as a compact ‹ › pair at the RIGHT edge of the text content.
+ * (The ☰ home-mark sits at the left edge — so the top bar reads as a
+ * symmetric ☰ ... [book name] ... ‹ ›.)
+ *
+ * prev+next are taken OUT of flow (absolute) so the book name can be truly
+ * centred in the column (not just centred in the leftover space). They're
+ * compact chevron-only pills (44px hit area) so the pair fits in the small
+ * space at the right of the book name even on mobile. The aria-labels
+ * (already on the links for SR users) carry the semantics; the chevron
+ * direction + right-edge position carry the visual affordance.
+ *
+ * Scoped via body:has(.home-mark) — chapter pages only. Book-TOC pages and
+ * the copyright page have no .home-mark, so they stay on the flat base. */
 body:has(.home-mark) ul.tnav {
+  display: flex;
   flex-wrap: nowrap;
-  justify-content: stretch;  /* mobile-first: prev flush left, next flush right
-                              * (split bar — easy thumb reach to both ends).
-                              * Desktop overrides to a centred cluster below. */
+  justify-content: center;  /* book name centred in the reading column */
+  align-items: center;
+  position: relative;       /* anchor for the absolute prev/next pair */
 }
-body:has(.home-mark) ul.tnav > li:nth-child(1) { order: 2; } /* book name → centre */
-body:has(.home-mark) ul.tnav > li:nth-child(2) { order: 1; flex: 1 1 0; } /* prev → far left, grows */
-body:has(.home-mark) ul.tnav > li:nth-child(3) { order: 3; flex: 1 1 0; } /* next → far right, grows */
-
-/* Desktop (>= 601px): centred cluster — prev/next are a comfortable fixed
- * width instead of growing across the whole 720px reading column (which
- * made them oversized and lopsided). The whole row centres; the page's
- * own side padding provides the breathing room. */
-@media (min-width: 601px) {
-  body:has(.home-mark) ul.tnav {
-    justify-content: center;
-    gap: 20px;
-  }
-  body:has(.home-mark) ul.tnav > li:nth-child(2),
-  body:has(.home-mark) ul.tnav > li:nth-child(3) {
-    flex: 0 0 auto;
-    min-width: 104px;   /* equal, predictable size regardless of book name */
-  }
+body:has(.home-mark) ul.tnav > li:nth-child(1) {  /* book name — in flow, centred */
+  flex: 0 0 auto;
+}
+/* prev + next: compact chevron pills pinned to the right edge as a pair.
+ * next at right:0; prev at right: <next width + gap>. Each pill is 44px
+ * (min-width below) so the offset is predictable. top:50% + translateY
+ * centres them vertically on the book name's band. */
+body:has(.home-mark) ul.tnav > li:nth-child(2) {  /* prev */
+  position: absolute;
+  right: 48px;        /* next (44) + 4px gap */
+  top: 50%;
+  transform: translateY(-50%);
+}
+body:has(.home-mark) ul.tnav > li:nth-child(3) {  /* next */
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 /* Flat pills — NO boxes by default. The layout (prev flush left, next flush
@@ -413,26 +407,29 @@ body:has(.home-mark) ul.tnav > li:nth-child(3) > a:focus-visible {
   color: var(--text-main);
 }
 
-/* Replace the bare "<" / ">" glyphs with a chevron + short word so the
- * prev/next affordance is unambiguous (position + label), but keep it as
- * plain text — no chrome. The aria-labels (already on the links for SR
- * users) stay intact. */
+/* prev/next: compact chevron-only pills. Hide the literal "<" / ">" text
+ * and show a single ‹ / › chevron instead of "‹ Prev" / "Next ›" — the pair
+ * is grouped at the right edge and the chevron direction carries the
+ * affordance, so the words are dropped for compactness (fits the small
+ * space at the right of the book name on mobile). aria-labels stay for SR. */
 body:has(.home-mark) ul.tnav > li > a[aria-label="Previous chapter"],
 body:has(.home-mark) ul.tnav > li > a[aria-label="Next chapter"] {
   font-size: 0;       /* hide the literal "<" / ">" text */
   letter-spacing: 0;
+  min-width: 44px;    /* predictable 44px hit area; also makes the absolute
+                         prev offset (right:48px = next 44 + 4 gap) stable. */
 }
 body:has(.home-mark) ul.tnav > li > a[aria-label="Previous chapter"]::before {
-  content: "‹ Prev";
-  font-size: 0.85rem;
-  letter-spacing: 0.01em;
-  font-weight: 400;
+  content: "‹";
+  font-size: 1.15rem;
+  font-weight: 500;
+  line-height: 1;
 }
 body:has(.home-mark) ul.tnav > li > a[aria-label="Next chapter"]::before {
-  content: "Next ›";
-  font-size: 0.85rem;
-  letter-spacing: 0.01em;
-  font-weight: 400;
+  content: "›";
+  font-size: 1.15rem;
+  font-weight: 500;
+  line-height: 1;
 }
 
 /* ---------- Home mark (top-left corner link to the all-books index) ----------
@@ -467,7 +464,15 @@ body:has(.home-mark) ul.tnav > li > a[aria-label="Next chapter"]::before {
                         centre offset, visually aligned. The 44px box is the
                         AA touch target; the glyph inside is ~17px so it
                         stays visually quiet. */
-  left: 0;
+  left: 16px;         /* align with the TEXT CONTENT's left edge. <body>
+                        has padding:0 16px, so its content box (where the
+                        text + nav live) starts 16px in from the body's
+                        outer left edge. left:16px (relative to body's
+                        padding box = its outer edge) puts the ☰ at the
+                        text content's left edge — symmetric with the ‹ ›
+                        pair at the text content's right edge. (Mobile
+                        overrides to 3mm below since body padding is 0
+                        there.) */
   z-index: 50;
   display: inline-flex;
   align-items: center;
@@ -703,23 +708,44 @@ body.chlist ul.tnav a, body.chlist ul.tnav a:link {
   body.chlist h1 { padding-left: 0; padding-right: 0; }
 
   /* Top / bottom chapter-nav rows on chapter pages (body > ul.tnav):
-   *   - 3mm side clearance so the grown prev/next buttons sit 3mm from the
-   *     screen edge (easy thumb reach, never touching the edge).
-   *   - The home-mark (☰) is on the SAME vertical band as the TOP nav row
-   *     (see .home-mark), flush with the column's left edge. On mobile the
-   *     nav is a full-width split bar with [‹ Prev] flush left — which
-   *     would overlap the ☰. Push the FIRST tnav's left edge past the ☰
-   *     (44px wide + a little gap) so the prev pill clears it. Desktop
-   *     doesn't need this: the nav is centred, the ☰ is at the column's
-   *     left edge, no overlap.
+   *   - 3mm side clearance (for book-TOC chapter grids, which are in-flow;
+   *     chapter-page prev/next are absolute and get their own inset below).
+   *   - The ☰ home-mark is at the LEFT edge on the same band, but the book
+   *     name is centred (not flush left), so there's no overlap to clear.
    *   - The bottom tnav's gap is handled by body padding-bottom + the
    *     last-of-type margin-zero rule in base styles. */
   body > ul.tnav {
     padding-left: 3mm;
     padding-right: 3mm;
   }
-  body:has(.home-mark) ul.tnav:first-of-type {
-    padding-left: 56px;   /* clear the 44px ☰ + 12px gap */
+  /* Chapter-page prev/next are absolutely positioned (right:0 / right:48px
+   * in the base rule), which on a full-bleed mobile ul would put them at
+   * the screen edge. Inset them 3mm so they align with the text content's
+   * right edge. */
+  body:has(.home-mark) ul.tnav > li:nth-child(3) { right: 3mm; }
+  body:has(.home-mark) ul.tnav > li:nth-child(2) { right: calc(3mm + 48px); }
+  /* The book-name pill is centred in the full column, but on a narrow phone
+   * the longest names ("Wisdom of Solomon", 17 chars) would collide with
+   * the ‹ › pair pinned at the right. Shrink the book-name pill on mobile:
+   * tighter horizontal padding + a slightly smaller font, and a max-width
+   * with ellipsis as a safety net so it can never overlap the ‹ › hit area.
+   * The book name is centred at 50% of the column, so its right edge reaches
+   * ~50% + maxW/2; to clear the ‹ › pair (~100px from the right edge) the
+   * max-width must be <= (100vw - 2*100px - buffer). On a 390px phone that's
+   * ~174px — "Wisdom of Solomon" (136px at 0.78rem) fits untruncated; on a
+   * 320px phone it truncates to "Wisdom of…" rather than overlapping. */
+  body:has(.home-mark) ul.tnav > li:nth-child(1) > a {
+    display: block;      /* text-overflow:ellipsis needs a block box, not the
+                           base inline-flex — switch so the truncation
+                           shows a proper "…" instead of a hard clip. */
+    text-align: center;  /* keep the book name centred within the pill */
+    padding-left: 6px;
+    padding-right: 6px;
+    font-size: 0.78rem;
+    max-width: calc(100vw - 216px);  /* 2×(☰ 56 / ‹› 100) + buffer */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   /* Index page: book list goes full-bleed; link text 3mm from each edge.
