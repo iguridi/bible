@@ -21,7 +21,7 @@
 
 'use strict';
 
-const OFFLINE_VERSION = 63;
+const OFFLINE_VERSION = 64;
 const ARCHIVE_CACHE = `archive_v${OFFLINE_VERSION}`;
 const STANDALONE_CACHE = `standalone_v${OFFLINE_VERSION}`;
 
