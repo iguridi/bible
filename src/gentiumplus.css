@@ -134,11 +134,17 @@ body {
   max-width: 720px;
   background-color: var(--bg);
   color: var(--text-main);
-  padding: 0 16px;
+  padding: 0 16px 24px;   /* bottom padding guarantees a gap after the last
+                           * chapter nav (its margin-bottom would otherwise
+                           * collapse through the body and vanish) */
   font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
+/* The last chapter-nav row on a chapter page sits at the very end of the
+ * document; zero its margin-bottom so the gap is exactly body's
+ * padding-bottom (no margin-collapse surprises, no double gap). */
+body > ul.tnav:last-of-type { margin-bottom: 0; }
 
 /* ---------- Headings ---------- */
 h1 {
@@ -264,43 +270,43 @@ h2 {
 .main.meta h2 { margin-top: 4px; }
 
 /* ---------- Top / bottom chapter nav (tnav) ---------- */
+/* Base row: a flex row of nav items. On chapter pages the row is laid out
+ * as [‹ Previous] [Book name] [Chapter N] [Next ›] with the prev/next
+ * buttons growing to fill space (so their width is stable regardless of
+ * the book-name length) and the book name + current chapter clustered in
+ * the centre. Book-TOC pages (GEN.htm) and the copyright page reuse the
+ * same flat base; chapter-page-specific chrome + reordering + labels are
+ * scoped with :has() below so they don't touch the book-TOC chapter grids. */
 ul.tnav {
   list-style-type: none;
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
+  align-items: stretch;
   justify-content: center;
-  gap: 2px;
-  margin: 12px 0;
+  gap: 6px;
+  margin: 20px 0;
   padding: 0;
 }
-/* Flat text nav row — no per-pill button chrome (keeps the 44px touch target).
- * Each li is an inline-flex row so the middot separator and the 44px pill
- * share one centered axis (no baseline wobble between tall pills and the
- * small · glyph). */
-.tnav li { display: inline-flex; align-items: center; }
-.tnav li + li::before {
-  content: "\00b7"; /* middot separator between pills */
-  color: var(--overlay0);
-  margin: 0 4px 0 2px;
-  speak: none;
-}
+.tnav li { display: inline-flex; align-items: stretch; flex: 0 0 auto; }
+/* (No separators between pills — spacing + button chrome carry the rhythm.) */
+.tnav li + li::before { content: none; }
 .tnav a, .tnav a:link {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
-  min-height: 44px;
-  padding: 10px 14px;
+  width: 100%;
+  min-height: 48px;
+  padding: 11px 14px;
   background: transparent;
   text-decoration: none;
   color: var(--subtext1);
   border: none;
   border-radius: 0;
-  min-width: 1.75em;
-  font-size: 0.82rem;
+  min-width: 2.25em;
+  font-size: 0.85rem;
   font-family: var(--ui-font);
-  transition: color 120ms ease;
+  transition: color 120ms ease, background 120ms ease, border-color 120ms ease;
 }
 .tnav a:visited { color: var(--subtext1); }
 .tnav a:hover { color: var(--text-main); }
@@ -309,13 +315,101 @@ ul.tnav {
   outline-offset: 2px;
 }
 
-/* The current chapter number is always the 3rd pill on a chapter page
- * (1st = book name, 2nd = prev, 3rd = current, 4th = next). Only chapter
- * pages have a book-name link as the first child, so :has() scopes this to
- * them and leaves book-TOC pages (GEN.htm) untouched. */
+/* ---- Chapter-page nav (4 pills: book name, prev, current, next) ----
+ * Scoped via :has() to tnavs whose first pill links back to the index — i.e.
+ * chapter pages (top + bottom). Book-TOC pages' first pill links to
+ * GEN01.htm, so they're left on the flat base. The copyright page's single
+ * "Index" pill also matches but only the reorder rule applies to it (the
+ * nth-child label rules don't match a 1-li list) — it simply stays a
+ * single flat link, which is fine. */
+ul.tnav:has(> li:first-child a[href$="index.html"]) {
+  flex-wrap: nowrap;
+  justify-content: stretch;  /* mobile-first: prev flush left, next flush right
+                              * (split bar — easy thumb reach to both ends).
+                              * Desktop overrides to a centred cluster below. */
+}
+ul.tnav:has(> li:first-child a[href$="index.html"]) > li:nth-child(1) { order: 2; } /* book name   → centre-left  */
+ul.tnav:has(> li:first-child a[href$="index.html"]) > li:nth-child(2) { order: 1; flex: 1 1 0; } /* prev → far left, grows to fill */
+ul.tnav:has(> li:first-child a[href$="index.html"]) > li:nth-child(3) { order: 3; } /* current     → centre-right */
+ul.tnav:has(> li:first-child a[href$="index.html"]) > li:nth-child(4) { order: 4; flex: 1 1 0; } /* next → far right, grows to fill */
+
+/* Desktop (>= 601px): centred cluster — prev/next are a comfortable fixed
+ * width instead of growing across the whole 720px reading column (which
+ * made them oversized and lopsided). The whole row centres; the page's
+ * own side padding provides the breathing room. */
+@media (min-width: 601px) {
+  ul.tnav:has(> li:first-child a[href$="index.html"]) {
+    justify-content: center;
+    gap: 20px;
+  }
+  ul.tnav:has(> li:first-child a[href$="index.html"]) > li:nth-child(2),
+  ul.tnav:has(> li:first-child a[href$="index.html"]) > li:nth-child(4) {
+    flex: 0 0 auto;
+    min-width: 104px;   /* equal, predictable size regardless of book name */
+  }
+}
+
+/* Flat pills — NO boxes by default. The layout (prev flush left, next flush
+ * right, book name + current chapter clustered centred) carries the
+ * affordance; the text sits on the page background so the bar reads as
+ * quiet chrome, not as a row of buttons. Prev/next are muted so they
+ * don't compete with the reading column. On hover/focus a quiet flat
+ * surface (surface2 + pill radius, matching the index book-list hover)
+ * appears — the affordance shows up only when you interact. */
+ul.tnav:has(> li:first-child a[href$="index.html"]) > li > a {
+  border-radius: var(--radius-pill);
+  transition: background 120ms ease, color 120ms ease;
+}
+ul.tnav:has(> li:first-child a[href$="index.html"]) > li > a:hover,
+ul.tnav:has(> li:first-child a[href$="index.html"]) > li > a:focus-visible {
+  background: var(--surface2);
+  color: var(--text-main);
+}
+ul.tnav:has(> li:first-child a[href$="index.html"]) > li:nth-child(2) > a,
+ul.tnav:has(> li:first-child a[href$="index.html"]) > li:nth-child(4) > a {
+  color: var(--subtext0);
+}
+ul.tnav:has(> li:first-child a[href$="index.html"]) > li:nth-child(2) > a:hover,
+ul.tnav:has(> li:first-child a[href$="index.html"]) > li:nth-child(4) > a:hover,
+ul.tnav:has(> li:first-child a[href$="index.html"]) > li:nth-child(2) > a:focus-visible,
+ul.tnav:has(> li:first-child a[href$="index.html"]) > li:nth-child(4) > a:focus-visible {
+  color: var(--text-main);
+}
+
+/* Replace the bare "<" / ">" glyphs with a chevron + short word so the
+ * prev/next affordance is unambiguous (position + label), but keep it as
+ * plain text — no chrome. The aria-labels (already on the links for SR
+ * users) stay intact. */
+ul.tnav:has(> li:first-child a[href$="index.html"]) > li > a[aria-label="Previous chapter"],
+ul.tnav:has(> li:first-child a[href$="index.html"]) > li > a[aria-label="Next chapter"] {
+  font-size: 0;       /* hide the literal "<" / ">" text */
+  letter-spacing: 0;
+}
+ul.tnav:has(> li:first-child a[href$="index.html"]) > li > a[aria-label="Previous chapter"]::before {
+  content: "‹ Prev";
+  font-size: 0.85rem;
+  letter-spacing: 0.01em;
+  font-weight: 500;
+}
+ul.tnav:has(> li:first-child a[href$="index.html"]) > li > a[aria-label="Next chapter"]::before {
+  content: "Next ›";
+  font-size: 0.85rem;
+  letter-spacing: 0.01em;
+  font-weight: 500;
+}
+
+/* The current chapter: just the number in the accent color + a little
+ * weight. No box, no tinted background — the position (centre-right,
+ * right after the book name) and the accent color mark "you are here".
+ * Keep the accent on hover/focus so the "current" signal doesn't vanish
+ * when you interact with the pill (only the surface appears). */
 ul.tnav:has(> li:first-child a[href$="index.html"]) > li:nth-child(3) > a {
   color: var(--accent);
   font-weight: 600;
+}
+ul.tnav:has(> li:first-child a[href$="index.html"]) > li:nth-child(3) > a:hover,
+ul.tnav:has(> li:first-child a[href$="index.html"]) > li:nth-child(3) > a:focus-visible {
+  color: var(--accent);
 }
 
 /* ---------- Book-list links (index page) ---------- */
@@ -511,11 +605,20 @@ body.chlist ul.tnav a, body.chlist ul.tnav a:link {
   }
   body.chlist h1 { padding-left: 0; padding-right: 0; }
 
-  /* Top / bottom chapter-nav pill rows on chapter pages (body > ul.tnav):
-   * give the centered pills a 3mm side clearance so they never touch the
-   * screen edge. (On chlist pages the tnav is inside the 3mm-padded card,
-   * so it's already covered.) */
-  body > ul.tnav { padding-left: 3mm; padding-right: 3mm; }
+  /* Top / bottom chapter-nav rows on chapter pages (body > ul.tnav):
+   *   - 3mm side clearance so the grown prev/next buttons sit 3mm from the
+   *     screen edge (easy thumb reach, never touching the edge).
+   *   - A little extra top breathing room so the top nav isn't glued to the
+   *     top of the viewport (the original flat row sat at ~12px from the
+   *     screen edge — too tight to tap comfortably).
+   * The bottom gap is handled globally via body padding-bottom + the
+   * last-of-type margin-zero rule (see base styles) — margin collapse would
+   * otherwise eat the last nav's margin-bottom. */
+  body > ul.tnav {
+    padding-left: 3mm;
+    padding-right: 3mm;
+    margin-top: 24px;
+  }
 
   /* Index page: book list goes full-bleed; link text 3mm from each edge.
    *   - h1 sits directly in #main (no .main card), so it needs its own 3mm.
