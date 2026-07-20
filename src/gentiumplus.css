@@ -314,14 +314,14 @@ ul.tnav {
  *
  * Scoped via body:has(.home-mark) — chapter pages only. Book-TOC pages and
  * the copyright page have no .home-mark, so they stay on the flat base. */
-body:has(.home-mark) ul.tnav {
+body:has(.home-mark) > ul.tnav {
   display: flex;
   flex-wrap: nowrap;
   justify-content: center;  /* book name centred in the reading column */
   align-items: center;
   position: relative;       /* anchor for the absolute prev/next pair */
 }
-body:has(.home-mark) ul.tnav > li:nth-child(1) {  /* book name — in flow, centred */
+body:has(.home-mark) > ul.tnav > li:nth-child(1) {  /* book name — in flow, centred */
   flex: 0 0 auto;
 }
 /* The book-name text (0.85rem) sits in a 48px pill with align-items:center,
@@ -329,7 +329,7 @@ body:has(.home-mark) ul.tnav > li:nth-child(1) {  /* book name — in flow, cent
  * touch above the ‹ › chevrons (which are 1.15rem and fill their line-box).
  * Nudge the book-name pill down ~2px so its ink visually aligns with the
  * chevrons. (The pill itself stays 48px; this just shifts the ink down.) */
-body:has(.home-mark) ul.tnav > li:nth-child(1) > a {
+body:has(.home-mark) > ul.tnav > li:nth-child(1) > a {
   padding-top: 15px;  /* base is 11px; +4px nudge pushes the text DOWN so
                           its visual centre aligns with the ‹ › chevrons.
                           The book-name text (0.85rem) has a descender area
@@ -342,13 +342,13 @@ body:has(.home-mark) ul.tnav > li:nth-child(1) > a {
  * next at right:0; prev at right: <next width + gap>. Each pill is 44px
  * (min-width below) so the offset is predictable. top:50% + translateY
  * centres them vertically on the book name's band. */
-body:has(.home-mark) ul.tnav > li:nth-child(2) {  /* prev */
+body:has(.home-mark) > ul.tnav > li:nth-child(2) {  /* prev */
   position: absolute;
   right: 48px;        /* next (44) + 4px gap */
   top: 50%;
   transform: translateY(-50%);
 }
-body:has(.home-mark) ul.tnav > li:nth-child(3) {  /* next */
+body:has(.home-mark) > ul.tnav > li:nth-child(3) {  /* next */
   position: absolute;
   right: 0;
   top: 50%;
@@ -362,12 +362,12 @@ body:has(.home-mark) ul.tnav > li:nth-child(3) {  /* next */
  * column. On hover/focus a quiet flat surface (surface2 + pill radius,
  * matching the index book-list hover) appears — the affordance shows up
  * only when you interact. */
-body:has(.home-mark) ul.tnav > li > a {
+body:has(.home-mark) > ul.tnav > li > a {
   border-radius: var(--radius-pill);
   transition: background 120ms ease, color 120ms ease;
 }
-body:has(.home-mark) ul.tnav > li > a:hover,
-body:has(.home-mark) ul.tnav > li > a:focus-visible {
+body:has(.home-mark) > ul.tnav > li > a:hover,
+body:has(.home-mark) > ul.tnav > li > a:focus-visible {
   background: var(--surface2);
   color: var(--text-main);
 }
@@ -377,13 +377,13 @@ body:has(.home-mark) ul.tnav > li > a:focus-visible {
  * that reads as a subtle highlight, not a loud block. (Dark mode keeps
  * surface2 = #585b70, appropriately subtle on the dark base.) */
 @media (prefers-color-scheme: light) {
-  body:has(.home-mark) ul.tnav > li > a:hover,
-  body:has(.home-mark) ul.tnav > li > a:focus-visible {
+  body:has(.home-mark) > ul.tnav > li > a:hover,
+  body:has(.home-mark) > ul.tnav > li > a:focus-visible {
     background: rgba(156, 160, 176, 0.26);
   }
 }
-body:has(.home-mark) ul.tnav > li:nth-child(2) > a,
-body:has(.home-mark) ul.tnav > li:nth-child(3) > a {
+body:has(.home-mark) > ul.tnav > li:nth-child(2) > a,
+body:has(.home-mark) > ul.tnav > li:nth-child(3) > a {
   color: var(--tertiary);   /* overlay1 on dark = 4.44:1 — dimmest AA-passing
                               token, genuinely "barely noticeable". Prev/next
                               are always the same + their position (far
@@ -395,15 +395,15 @@ body:has(.home-mark) ul.tnav > li:nth-child(3) > a {
  * dimmest acceptable token on the light page bg, so use it here instead —
  * still subtle (weight 400), just AA-respecting. */
 @media (prefers-color-scheme: light) {
-  body:has(.home-mark) ul.tnav > li:nth-child(2) > a,
-  body:has(.home-mark) ul.tnav > li:nth-child(3) > a {
+  body:has(.home-mark) > ul.tnav > li:nth-child(2) > a,
+  body:has(.home-mark) > ul.tnav > li:nth-child(3) > a {
     color: var(--subtext0);
   }
 }
-body:has(.home-mark) ul.tnav > li:nth-child(2) > a:hover,
-body:has(.home-mark) ul.tnav > li:nth-child(3) > a:hover,
-body:has(.home-mark) ul.tnav > li:nth-child(2) > a:focus-visible,
-body:has(.home-mark) ul.tnav > li:nth-child(3) > a:focus-visible {
+body:has(.home-mark) > ul.tnav > li:nth-child(2) > a:hover,
+body:has(.home-mark) > ul.tnav > li:nth-child(3) > a:hover,
+body:has(.home-mark) > ul.tnav > li:nth-child(2) > a:focus-visible,
+body:has(.home-mark) > ul.tnav > li:nth-child(3) > a:focus-visible {
   color: var(--text-main);
 }
 
@@ -412,20 +412,20 @@ body:has(.home-mark) ul.tnav > li:nth-child(3) > a:focus-visible {
  * is grouped at the right edge and the chevron direction carries the
  * affordance, so the words are dropped for compactness (fits the small
  * space at the right of the book name on mobile). aria-labels stay for SR. */
-body:has(.home-mark) ul.tnav > li > a[aria-label="Previous chapter"],
-body:has(.home-mark) ul.tnav > li > a[aria-label="Next chapter"] {
+body:has(.home-mark) > ul.tnav > li > a[aria-label="Previous chapter"],
+body:has(.home-mark) > ul.tnav > li > a[aria-label="Next chapter"] {
   font-size: 0;       /* hide the literal "<" / ">" text */
   letter-spacing: 0;
   min-width: 44px;    /* predictable 44px hit area; also makes the absolute
                          prev offset (right:48px = next 44 + 4 gap) stable. */
 }
-body:has(.home-mark) ul.tnav > li > a[aria-label="Previous chapter"]::before {
+body:has(.home-mark) > ul.tnav > li > a[aria-label="Previous chapter"]::before {
   content: "‹";
   font-size: 1.15rem;
   font-weight: 500;
   line-height: 1;
 }
-body:has(.home-mark) ul.tnav > li > a[aria-label="Next chapter"]::before {
+body:has(.home-mark) > ul.tnav > li > a[aria-label="Next chapter"]::before {
   content: "›";
   font-size: 1.15rem;
   font-weight: 500;
@@ -666,40 +666,22 @@ li.sep:not(:first-child) span::before { background: var(--accent-nt); }
  * <h1><a href='../index.html'>Genesis</a></h1> followed by several
  * <ul class='tnav'> chapter-number grids. One <h1> per page (the book name);
  * the translation/app name is a non-heading site-title label above it. */
-body.chlist { padding-bottom: 32px; }
-body.chlist .site-title {
-  margin: 0;
-  padding: 24px 0 0;
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--tertiary);
-}
-body.chlist .site-title a:link,
-body.chlist .site-title a:visited { color: var(--tertiary); text-decoration: none; }
-body.chlist .site-title a:hover { color: var(--accent); text-decoration: none; }
-body.chlist h1 {
+/* Chapter index pages (book TOC) */
+body > main h1 {
   font-size: 1.6rem; font-weight: 600; color: var(--text-main);
   letter-spacing: -0.01em; padding: 2px 0 8px;
   border-bottom: 1px solid var(--border); margin: 0 0 4px;
 }
-body.chlist {
-  background: transparent;
-  border: none;
-  border-radius: 0;
-  margin: 16px auto;
-  padding: 4px 16px 24px;
-}
-body.chlist ul.tnav {
+body > main ul.tnav {
   margin: 10px 0;
   background: transparent;
   border: none;
   border-radius: 0;
   padding: 0;
   box-shadow: none;
+  display: block;
 }
-body.chlist ul.tnav a, body.chlist ul.tnav a:link {
+body > main ul.tnav a, body > main ul.tnav a:link {
   min-width: 2.4em; text-align: center;
 }
 
@@ -728,18 +710,6 @@ body.chlist ul.tnav a, body.chlist ul.tnav a:link {
     box-shadow: none;
   }
 
-  /* Book table-of-contents page (GEN.htm, MAT.htm, ...). */
-  body.chlist {
-    margin-left: 0;
-    margin-right: 0;
-    padding: 4px 3mm 24px;
-    border-left: none;
-    border-right: none;
-    border-radius: 0;
-    box-shadow: none;
-  }
-  body.chlist h1 { padding-left: 0; padding-right: 0; }
-
   /* Top / bottom chapter-nav rows on chapter pages (body > ul.tnav):
    *   - 3mm side clearance (for book-TOC chapter grids, which are in-flow;
    *     chapter-page prev/next are absolute and get their own inset below).
@@ -755,8 +725,8 @@ body.chlist ul.tnav a, body.chlist ul.tnav a:link {
    * in the base rule), which on a full-bleed mobile ul would put them at
    * the screen edge. Inset them 3mm so they align with the text content's
    * right edge. */
-  body:has(.home-mark) ul.tnav > li:nth-child(3) { right: 3mm; }
-  body:has(.home-mark) ul.tnav > li:nth-child(2) { right: calc(3mm + 48px); }
+  body:has(.home-mark) > ul.tnav > li:nth-child(3) { right: 3mm; }
+  body:has(.home-mark) > ul.tnav > li:nth-child(2) { right: calc(3mm + 48px); }
   /* The book-name pill is centred in the full column, but on a narrow phone
    * the longest names ("Wisdom of Solomon", 17 chars) would collide with
    * the ‹ › pair pinned at the right. Shrink the book-name pill on mobile:
@@ -767,7 +737,7 @@ body.chlist ul.tnav a, body.chlist ul.tnav a:link {
    * max-width must be <= (100vw - 2*100px - buffer). On a 390px phone that's
    * ~174px — "Wisdom of Solomon" (136px at 0.78rem) fits untruncated; on a
    * 320px phone it truncates to "Wisdom of…" rather than overlapping. */
-  body:has(.home-mark) ul.tnav > li:nth-child(1) > a {
+  body:has(.home-mark) > ul.tnav > li:nth-child(1) > a {
     display: block;      /* text-overflow:ellipsis needs a block box, not the
                            base inline-flex — switch so the truncation
                            shows a proper "…" instead of a hard clip. */
