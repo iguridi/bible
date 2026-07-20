@@ -316,34 +316,41 @@ ul.tnav {
 }
 
 /* ---- Chapter-page nav (4 pills: book name, prev, current, next) ----
- * Scoped via :has() to tnavs whose first pill links back to the index — i.e.
- * chapter pages (top + bottom). Book-TOC pages' first pill links to
- * GEN01.htm, so they're left on the flat base. The copyright page's single
- * "Index" pill also matches but only the reorder rule applies to it (the
- * nth-child label rules don't match a 1-li list) — it simply stays a
- * single flat link, which is fine. */
-ul.tnav:has(> li:first-child a[href$="index.html"]) {
+ * Scoped via :has() to tnavs whose third pill carries aria-current='page'
+ * AND whose first pill links to a same-directory BOOK.htm (this book's
+ * chapter list) — i.e. chapter pages (top + bottom). Book-TOC pages'
+ * pills link to BOOKNN.htm chapter files and carry no aria-current, so
+ * they DON'T match and stay on the flat base. The copyright page's single
+ * "Index" pill also doesn't match (only 1 li, no aria-current) — it stays
+ * a single flat link.
+ *
+ * NOTE: the book-name pill (1st) now links to this book's chapter list
+ * (BOOK.htm) and the current-chapter pill (3rd) links to ../index.html
+ * (all books) — the labels match the destinations, so each pill is
+ * self-explanatory. See swap-nav-hrefs.py for the bulk HTML edit that
+ * performed this swap across the 1334 chapter files. */
+ul.tnav:has(> li:nth-child(3) > a[aria-current="page"]) {
   flex-wrap: nowrap;
   justify-content: stretch;  /* mobile-first: prev flush left, next flush right
                               * (split bar — easy thumb reach to both ends).
                               * Desktop overrides to a centred cluster below. */
 }
-ul.tnav:has(> li:first-child a[href$="index.html"]) > li:nth-child(1) { order: 2; } /* book name   → centre-left  */
-ul.tnav:has(> li:first-child a[href$="index.html"]) > li:nth-child(2) { order: 1; flex: 1 1 0; } /* prev → far left, grows to fill */
-ul.tnav:has(> li:first-child a[href$="index.html"]) > li:nth-child(3) { order: 3; } /* current     → centre-right */
-ul.tnav:has(> li:first-child a[href$="index.html"]) > li:nth-child(4) { order: 4; flex: 1 1 0; } /* next → far right, grows to fill */
+ul.tnav:has(> li:nth-child(3) > a[aria-current="page"]) > li:nth-child(1) { order: 2; } /* book name   → centre-left  */
+ul.tnav:has(> li:nth-child(3) > a[aria-current="page"]) > li:nth-child(2) { order: 1; flex: 1 1 0; } /* prev → far left, grows to fill */
+ul.tnav:has(> li:nth-child(3) > a[aria-current="page"]) > li:nth-child(3) { order: 3; } /* current     → centre-right */
+ul.tnav:has(> li:nth-child(3) > a[aria-current="page"]) > li:nth-child(4) { order: 4; flex: 1 1 0; } /* next → far right, grows to fill */
 
 /* Desktop (>= 601px): centred cluster — prev/next are a comfortable fixed
  * width instead of growing across the whole 720px reading column (which
  * made them oversized and lopsided). The whole row centres; the page's
  * own side padding provides the breathing room. */
 @media (min-width: 601px) {
-  ul.tnav:has(> li:first-child a[href$="index.html"]) {
+  ul.tnav:has(> li:nth-child(3) > a[aria-current="page"]) {
     justify-content: center;
     gap: 20px;
   }
-  ul.tnav:has(> li:first-child a[href$="index.html"]) > li:nth-child(2),
-  ul.tnav:has(> li:first-child a[href$="index.html"]) > li:nth-child(4) {
+  ul.tnav:has(> li:nth-child(3) > a[aria-current="page"]) > li:nth-child(2),
+  ul.tnav:has(> li:nth-child(3) > a[aria-current="page"]) > li:nth-child(4) {
     flex: 0 0 auto;
     min-width: 104px;   /* equal, predictable size regardless of book name */
   }
@@ -356,17 +363,27 @@ ul.tnav:has(> li:first-child a[href$="index.html"]) > li:nth-child(4) { order: 4
  * don't compete with the reading column. On hover/focus a quiet flat
  * surface (surface2 + pill radius, matching the index book-list hover)
  * appears — the affordance shows up only when you interact. */
-ul.tnav:has(> li:first-child a[href$="index.html"]) > li > a {
+ul.tnav:has(> li:nth-child(3) > a[aria-current="page"]) > li > a {
   border-radius: var(--radius-pill);
   transition: background 120ms ease, color 120ms ease;
 }
-ul.tnav:has(> li:first-child a[href$="index.html"]) > li > a:hover,
-ul.tnav:has(> li:first-child a[href$="index.html"]) > li > a:focus-visible {
+ul.tnav:has(> li:nth-child(3) > a[aria-current="page"]) > li > a:hover,
+ul.tnav:has(> li:nth-child(3) > a[aria-current="page"]) > li > a:focus-visible {
   background: var(--surface2);
   color: var(--text-main);
 }
-ul.tnav:has(> li:first-child a[href$="index.html"]) > li:nth-child(2) > a,
-ul.tnav:has(> li:first-child a[href$="index.html"]) > li:nth-child(4) > a {
+/* Light mode: surface2 (#acb0be) is the darkest Latte surface token and
+ * reads as a heavy gray block on the light page bg. Use surface1 (#bcc0cc)
+ * instead — lighter, still a clear hover affordance. (Dark mode keeps
+ * surface2 = #585b70, which is appropriately subtle on the dark base.) */
+@media (prefers-color-scheme: light) {
+  ul.tnav:has(> li:nth-child(3) > a[aria-current="page"]) > li > a:hover,
+  ul.tnav:has(> li:nth-child(3) > a[aria-current="page"]) > li > a:focus-visible {
+    background: var(--surface1);
+  }
+}
+ul.tnav:has(> li:nth-child(3) > a[aria-current="page"]) > li:nth-child(2) > a,
+ul.tnav:has(> li:nth-child(3) > a[aria-current="page"]) > li:nth-child(4) > a {
   color: var(--tertiary);   /* overlay1 on dark = 4.44:1 — dimmest AA-passing
                               token, genuinely "barely noticeable". Prev/next
                               are always the same + their position (far
@@ -378,15 +395,15 @@ ul.tnav:has(> li:first-child a[href$="index.html"]) > li:nth-child(4) > a {
  * dimmest acceptable token on the light page bg, so use it here instead —
  * still subtle (weight 400), just AA-respecting. */
 @media (prefers-color-scheme: light) {
-  ul.tnav:has(> li:first-child a[href$="index.html"]) > li:nth-child(2) > a,
-  ul.tnav:has(> li:first-child a[href$="index.html"]) > li:nth-child(4) > a {
+  ul.tnav:has(> li:nth-child(3) > a[aria-current="page"]) > li:nth-child(2) > a,
+  ul.tnav:has(> li:nth-child(3) > a[aria-current="page"]) > li:nth-child(4) > a {
     color: var(--subtext0);
   }
 }
-ul.tnav:has(> li:first-child a[href$="index.html"]) > li:nth-child(2) > a:hover,
-ul.tnav:has(> li:first-child a[href$="index.html"]) > li:nth-child(4) > a:hover,
-ul.tnav:has(> li:first-child a[href$="index.html"]) > li:nth-child(2) > a:focus-visible,
-ul.tnav:has(> li:first-child a[href$="index.html"]) > li:nth-child(4) > a:focus-visible {
+ul.tnav:has(> li:nth-child(3) > a[aria-current="page"]) > li:nth-child(2) > a:hover,
+ul.tnav:has(> li:nth-child(3) > a[aria-current="page"]) > li:nth-child(4) > a:hover,
+ul.tnav:has(> li:nth-child(3) > a[aria-current="page"]) > li:nth-child(2) > a:focus-visible,
+ul.tnav:has(> li:nth-child(3) > a[aria-current="page"]) > li:nth-child(4) > a:focus-visible {
   color: var(--text-main);
 }
 
@@ -394,18 +411,18 @@ ul.tnav:has(> li:first-child a[href$="index.html"]) > li:nth-child(4) > a:focus-
  * prev/next affordance is unambiguous (position + label), but keep it as
  * plain text — no chrome. The aria-labels (already on the links for SR
  * users) stay intact. */
-ul.tnav:has(> li:first-child a[href$="index.html"]) > li > a[aria-label="Previous chapter"],
-ul.tnav:has(> li:first-child a[href$="index.html"]) > li > a[aria-label="Next chapter"] {
+ul.tnav:has(> li:nth-child(3) > a[aria-current="page"]) > li > a[aria-label="Previous chapter"],
+ul.tnav:has(> li:nth-child(3) > a[aria-current="page"]) > li > a[aria-label="Next chapter"] {
   font-size: 0;       /* hide the literal "<" / ">" text */
   letter-spacing: 0;
 }
-ul.tnav:has(> li:first-child a[href$="index.html"]) > li > a[aria-label="Previous chapter"]::before {
+ul.tnav:has(> li:nth-child(3) > a[aria-current="page"]) > li > a[aria-label="Previous chapter"]::before {
   content: "‹ Prev";
   font-size: 0.85rem;
   letter-spacing: 0.01em;
   font-weight: 400;
 }
-ul.tnav:has(> li:first-child a[href$="index.html"]) > li > a[aria-label="Next chapter"]::before {
+ul.tnav:has(> li:nth-child(3) > a[aria-current="page"]) > li > a[aria-label="Next chapter"]::before {
   content: "Next ›";
   font-size: 0.85rem;
   letter-spacing: 0.01em;
@@ -417,12 +434,12 @@ ul.tnav:has(> li:first-child a[href$="index.html"]) > li > a[aria-label="Next ch
  * right after the book name) and the accent color mark "you are here".
  * Keep the accent on hover/focus so the "current" signal doesn't vanish
  * when you interact with the pill (only the surface appears). */
-ul.tnav:has(> li:first-child a[href$="index.html"]) > li:nth-child(3) > a {
+ul.tnav:has(> li:nth-child(3) > a[aria-current="page"]) > li:nth-child(3) > a {
   color: var(--accent);
   font-weight: 600;
 }
-ul.tnav:has(> li:first-child a[href$="index.html"]) > li:nth-child(3) > a:hover,
-ul.tnav:has(> li:first-child a[href$="index.html"]) > li:nth-child(3) > a:focus-visible {
+ul.tnav:has(> li:nth-child(3) > a[aria-current="page"]) > li:nth-child(3) > a:hover,
+ul.tnav:has(> li:nth-child(3) > a[aria-current="page"]) > li:nth-child(3) > a:focus-visible {
   color: var(--accent);
 }
 
