@@ -367,7 +367,21 @@ ul.tnav:has(> li:first-child a[href$="index.html"]) > li > a:focus-visible {
 }
 ul.tnav:has(> li:first-child a[href$="index.html"]) > li:nth-child(2) > a,
 ul.tnav:has(> li:first-child a[href$="index.html"]) > li:nth-child(4) > a {
-  color: var(--subtext0);
+  color: var(--tertiary);   /* overlay1 on dark = 4.44:1 — dimmest AA-passing
+                              token, genuinely "barely noticeable". Prev/next
+                              are always the same + their position (far
+                              left/right) conveys the affordance, so the text
+                              is intentionally quiet; brightens on hover/focus. */
+}
+/* Light mode: the Latte palette has no AA-passing token as dim as dark's
+ * overlay1 (light overlay1 = 2.83:1, fails). subtext0 (4.37:1) is the
+ * dimmest acceptable token on the light page bg, so use it here instead —
+ * still subtle (weight 400), just AA-respecting. */
+@media (prefers-color-scheme: light) {
+  ul.tnav:has(> li:first-child a[href$="index.html"]) > li:nth-child(2) > a,
+  ul.tnav:has(> li:first-child a[href$="index.html"]) > li:nth-child(4) > a {
+    color: var(--subtext0);
+  }
 }
 ul.tnav:has(> li:first-child a[href$="index.html"]) > li:nth-child(2) > a:hover,
 ul.tnav:has(> li:first-child a[href$="index.html"]) > li:nth-child(4) > a:hover,
@@ -389,13 +403,13 @@ ul.tnav:has(> li:first-child a[href$="index.html"]) > li > a[aria-label="Previou
   content: "‹ Prev";
   font-size: 0.85rem;
   letter-spacing: 0.01em;
-  font-weight: 500;
+  font-weight: 400;
 }
 ul.tnav:has(> li:first-child a[href$="index.html"]) > li > a[aria-label="Next chapter"]::before {
   content: "Next ›";
   font-size: 0.85rem;
   letter-spacing: 0.01em;
-  font-weight: 500;
+  font-weight: 400;
 }
 
 /* The current chapter: just the number in the accent color + a little
