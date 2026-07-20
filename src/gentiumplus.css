@@ -456,6 +456,7 @@ body:has(.home-mark) > main .mt:first-of-type {
 }
 /* Inline-block doesn't preserve whitespace between elements, so add
  * a small right margin to create the gap between words. */
+body:has(.home-mark) > main .mt,
 body:has(.home-mark) > main .mt2,
 body:has(.home-mark) > main .mt3 {
   margin-right: 0.25em;
