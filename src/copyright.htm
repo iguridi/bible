@@ -22,4 +22,12 @@
 Help support free Bible access at <a href="https://eBible.org/give.php">https://eBible.org/give.php</a>.</p>
 <div class="fine">Translation: Douay-Rheims 1899 (Challoner revision), public domain. The Douay-Rheims carries a historical Catholic Imprimatur. Made for personal use, no guarantees are made about its accuracy or completeness.</div>
 </main>
+<script>
+document.addEventListener('click', function(e) {
+  var verse = e.target.closest('.verse');
+  if (verse && verse.id) {
+    history.pushState(null, null, '#' + verse.id);
+  }
+});
+</script>
 </body></html>

@@ -48,4 +48,12 @@
 <li><a href='PRO30.htm'>30</a></li>
 </ul><ul class='tnav'>
 <li><a href='PRO31.htm'>31</a></li>
-</ul></main></body></html>
+</ul></main><script>
+document.addEventListener('click', function(e) {
+  var verse = e.target.closest('.verse');
+  if (verse && verse.id) {
+    history.pushState(null, null, '#' + verse.id);
+  }
+});
+</script>
+</body></html>

@@ -16,4 +16,12 @@
 <li><a href='LAM03.htm'>3</a></li>
 <li><a href='LAM04.htm'>4</a></li>
 <li><a href='LAM05.htm'>5</a></li>
-</ul></main></body></html>
+</ul></main><script>
+document.addEventListener('click', function(e) {
+  var verse = e.target.closest('.verse');
+  if (verse && verse.id) {
+    history.pushState(null, null, '#' + verse.id);
+  }
+});
+</script>
+</body></html>

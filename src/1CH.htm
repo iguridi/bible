@@ -45,4 +45,12 @@
 <li><a href='1CH27.htm'>27</a></li>
 <li><a href='1CH28.htm'>28</a></li>
 <li><a href='1CH29.htm'>29</a></li>
-</ul></main></body></html>
+</ul></main><script>
+document.addEventListener('click', function(e) {
+  var verse = e.target.closest('.verse');
+  if (verse && verse.id) {
+    history.pushState(null, null, '#' + verse.id);
+  }
+});
+</script>
+</body></html>

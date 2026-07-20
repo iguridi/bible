@@ -22,4 +22,12 @@
 <li><a href='EZR08.htm'>8</a></li>
 <li><a href='EZR09.htm'>9</a></li>
 <li><a href='EZR10.htm'>10</a></li>
-</ul></main></body></html>
+</ul></main><script>
+document.addEventListener('click', function(e) {
+  var verse = e.target.closest('.verse');
+  if (verse && verse.id) {
+    history.pushState(null, null, '#' + verse.id);
+  }
+});
+</script>
+</body></html>

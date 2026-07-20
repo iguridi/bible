@@ -36,4 +36,12 @@
 <li><a href='JDG20.htm'>20</a></li>
 </ul><ul class='tnav'>
 <li><a href='JDG21.htm'>21</a></li>
-</ul></main></body></html>
+</ul></main><script>
+document.addEventListener('click', function(e) {
+  var verse = e.target.closest('.verse');
+  if (verse && verse.id) {
+    history.pushState(null, null, '#' + verse.id);
+  }
+});
+</script>
+</body></html>

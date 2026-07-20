@@ -70,4 +70,12 @@
 <li><a href='GEN48.htm'>48</a></li>
 <li><a href='GEN49.htm'>49</a></li>
 <li><a href='GEN50.htm'>50</a></li>
-</ul></main></body></html>
+</ul></main><script>
+document.addEventListener('click', function(e) {
+  var verse = e.target.closest('.verse');
+  if (verse && verse.id) {
+    history.pushState(null, null, '#' + verse.id);
+  }
+});
+</script>
+</body></html>

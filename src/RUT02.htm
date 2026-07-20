@@ -24,4 +24,12 @@
 <li><a href='RUT.htm'>Ruth 2</a></li>
 <li><a href='RUT01.htm' aria-label='Previous chapter'>&lt;</a></li>
 <li><a href='RUT03.htm' aria-label='Next chapter'>&gt;</a></li>
-</ul></body></html>
+</ul><script>
+document.addEventListener('click', function(e) {
+  var verse = e.target.closest('.verse');
+  if (verse && verse.id) {
+    history.pushState(null, null, '#' + verse.id);
+  }
+});
+</script>
+</body></html>

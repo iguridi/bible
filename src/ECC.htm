@@ -25,4 +25,12 @@
 </ul><ul class='tnav'>
 <li><a href='ECC11.htm'>11</a></li>
 <li><a href='ECC12.htm'>12</a></li>
-</ul></main></body></html>
+</ul></main><script>
+document.addEventListener('click', function(e) {
+  var verse = e.target.closest('.verse');
+  if (verse && verse.id) {
+    history.pushState(null, null, '#' + verse.id);
+  }
+});
+</script>
+</body></html>

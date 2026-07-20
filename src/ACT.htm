@@ -44,4 +44,12 @@
 <li><a href='ACT26.htm'>26</a></li>
 <li><a href='ACT27.htm'>27</a></li>
 <li><a href='ACT28.htm'>28</a></li>
-</ul></main></body></html>
+</ul></main><script>
+document.addEventListener('click', function(e) {
+  var verse = e.target.closest('.verse');
+  if (verse && verse.id) {
+    history.pushState(null, null, '#' + verse.id);
+  }
+});
+</script>
+</body></html>

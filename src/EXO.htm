@@ -58,4 +58,12 @@
 <li><a href='EXO38.htm'>38</a></li>
 <li><a href='EXO39.htm'>39</a></li>
 <li><a href='EXO40.htm'>40</a></li>
-</ul></main></body></html>
+</ul></main><script>
+document.addEventListener('click', function(e) {
+  var verse = e.target.closest('.verse');
+  if (verse && verse.id) {
+    history.pushState(null, null, '#' + verse.id);
+  }
+});
+</script>
+</body></html>

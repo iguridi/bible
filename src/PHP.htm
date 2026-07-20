@@ -15,4 +15,12 @@
 <li><a href='PHP02.htm'>2</a></li>
 <li><a href='PHP03.htm'>3</a></li>
 <li><a href='PHP04.htm'>4</a></li>
-</ul></main></body></html>
+</ul></main><script>
+document.addEventListener('click', function(e) {
+  var verse = e.target.closest('.verse');
+  if (verse && verse.id) {
+    history.pushState(null, null, '#' + verse.id);
+  }
+});
+</script>
+</body></html>

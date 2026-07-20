@@ -9,13 +9,6 @@
 <link href='manifest.json' rel='manifest' />
 </head>
 <body>
-<div id="dl-bar"><i></i></div>
-<style>
-#dl-bar { width: 100%; height: 2px; pointer-events: none; }
-#dl-bar > i { display: block; height: 100%; width: var(--w, 0%); background: var(--accent); }
-#dl-bar[data-state="aborted"] > i { background: var(--red); }
-#dl-bar[data-state="ready"] > i { background: var(--teal); }
-</style>
 <main id="main">
 <h1>Catholic English Bible</h1>
 <div><ul>
@@ -99,6 +92,13 @@
 <div class="mainindex">
 <div class="fine">Translation: Douay-Rheims 1899 (Challoner revision), <a href='src/copyright.htm'>public domain</a>. Source files freely obtained from <a href='https://ebible.org/engDRA/'>eBible.org/engDRA</a>. The Douay-Rheims carries a historical Catholic Imprimatur. Made for personal use, no guarantees are made about its accuracy or completeness.</div>
 </div>
+<div id="dl-bar"><i></i></div>
+<style>
+#dl-bar { width: 100%; height: 2px; pointer-events: none; margin-top: 3em; }
+#dl-bar > i { display: block; height: 100%; width: var(--w, 0%); background: var(--accent); }
+#dl-bar[data-state="aborted"] > i { background: var(--red); }
+#dl-bar[data-state="ready"] > i { background: var(--overlay0); }
+</style>
 <script>
 (function () {
   // Only mount when the archive strategy can actually run. Old Safari / no

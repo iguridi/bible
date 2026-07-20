@@ -90,4 +90,12 @@
 <li><a href='ISA65.htm'>65</a></li>
 </ul><ul class='tnav'>
 <li><a href='ISA66.htm'>66</a></li>
-</ul></main></body></html>
+</ul></main><script>
+document.addEventListener('click', function(e) {
+  var verse = e.target.closest('.verse');
+  if (verse && verse.id) {
+    history.pushState(null, null, '#' + verse.id);
+  }
+});
+</script>
+</body></html>

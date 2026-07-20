@@ -39,4 +39,12 @@
 <li><a href='LUK22.htm'>22</a></li>
 <li><a href='LUK23.htm'>23</a></li>
 <li><a href='LUK24.htm'>24</a></li>
-</ul></main></body></html>
+</ul></main><script>
+document.addEventListener('click', function(e) {
+  var verse = e.target.closest('.verse');
+  if (verse && verse.id) {
+    history.pushState(null, null, '#' + verse.id);
+  }
+});
+</script>
+</body></html>

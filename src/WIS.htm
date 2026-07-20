@@ -33,4 +33,12 @@
 <li><a href='WIS17.htm'>17</a></li>
 <li><a href='WIS18.htm'>18</a></li>
 <li><a href='WIS19.htm'>19</a></li>
-</ul></main></body></html>
+</ul></main><script>
+document.addEventListener('click', function(e) {
+  var verse = e.target.closest('.verse');
+  if (verse && verse.id) {
+    history.pushState(null, null, '#' + verse.id);
+  }
+});
+</script>
+</body></html>

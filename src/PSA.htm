@@ -190,4 +190,12 @@
 <li><a href='PSA148.htm'>148</a></li>
 <li><a href='PSA149.htm'>149</a></li>
 <li><a href='PSA150.htm'>150</a></li>
-</ul></main></body></html>
+</ul></main><script>
+document.addEventListener('click', function(e) {
+  var verse = e.target.closest('.verse');
+  if (verse && verse.id) {
+    history.pushState(null, null, '#' + verse.id);
+  }
+});
+</script>
+</body></html>

@@ -68,4 +68,12 @@
 <li><a href='EZK46.htm'>46</a></li>
 <li><a href='EZK47.htm'>47</a></li>
 <li><a href='EZK48.htm'>48</a></li>
-</ul></main></body></html>
+</ul></main><script>
+document.addEventListener('click', function(e) {
+  var verse = e.target.closest('.verse');
+  if (verse && verse.id) {
+    history.pushState(null, null, '#' + verse.id);
+  }
+});
+</script>
+</body></html>

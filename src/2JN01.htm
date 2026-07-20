@@ -24,4 +24,12 @@
 <li><a href='2JN.htm'>2 John 1</a></li>
 <li><a href='1JN05.htm' aria-label='Previous chapter'>&lt;</a></li>
 <li><a href='3JN01.htm' aria-label='Next chapter'>&gt;</a></li>
-</ul></body></html>
+</ul><script>
+document.addEventListener('click', function(e) {
+  var verse = e.target.closest('.verse');
+  if (verse && verse.id) {
+    history.pushState(null, null, '#' + verse.id);
+  }
+});
+</script>
+</body></html>

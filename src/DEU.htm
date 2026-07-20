@@ -51,4 +51,12 @@
 <li><a href='DEU32.htm'>32</a></li>
 <li><a href='DEU33.htm'>33</a></li>
 <li><a href='DEU34.htm'>34</a></li>
-</ul></main></body></html>
+</ul></main><script>
+document.addEventListener('click', function(e) {
+  var verse = e.target.closest('.verse');
+  if (verse && verse.id) {
+    history.pushState(null, null, '#' + verse.id);
+  }
+});
+</script>
+</body></html>

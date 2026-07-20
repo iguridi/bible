@@ -24,4 +24,12 @@
 <li><a href='ROM.htm'>Romans 9</a></li>
 <li><a href='ROM08.htm' aria-label='Previous chapter'>&lt;</a></li>
 <li><a href='ROM10.htm' aria-label='Next chapter'>&gt;</a></li>
-</ul></body></html>
+</ul><script>
+document.addEventListener('click', function(e) {
+  var verse = e.target.closest('.verse');
+  if (verse && verse.id) {
+    history.pushState(null, null, '#' + verse.id);
+  }
+});
+</script>
+</body></html>

@@ -26,4 +26,12 @@
 <li><a href='NEH11.htm'>11</a></li>
 <li><a href='NEH12.htm'>12</a></li>
 <li><a href='NEH13.htm'>13</a></li>
-</ul></main></body></html>
+</ul></main><script>
+document.addEventListener('click', function(e) {
+  var verse = e.target.closest('.verse');
+  if (verse && verse.id) {
+    history.pushState(null, null, '#' + verse.id);
+  }
+});
+</script>
+</body></html>

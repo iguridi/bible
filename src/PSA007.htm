@@ -24,4 +24,12 @@
 <li><a href='PSA.htm'>Psalms 7</a></li>
 <li><a href='PSA006.htm' aria-label='Previous chapter'>&lt;</a></li>
 <li><a href='PSA008.htm' aria-label='Next chapter'>&gt;</a></li>
-</ul></body></html>
+</ul><script>
+document.addEventListener('click', function(e) {
+  var verse = e.target.closest('.verse');
+  if (verse && verse.id) {
+    history.pushState(null, null, '#' + verse.id);
+  }
+});
+</script>
+</body></html>

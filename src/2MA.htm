@@ -28,4 +28,12 @@
 <li><a href='2MA13.htm'>13</a></li>
 <li><a href='2MA14.htm'>14</a></li>
 <li><a href='2MA15.htm'>15</a></li>
-</ul></main></body></html>
+</ul></main><script>
+document.addEventListener('click', function(e) {
+  var verse = e.target.closest('.verse');
+  if (verse && verse.id) {
+    history.pushState(null, null, '#' + verse.id);
+  }
+});
+</script>
+</body></html>
