@@ -315,60 +315,58 @@ ul.tnav {
   outline-offset: 2px;
 }
 
-/* ---- Chapter-page nav (4 pills: book name, prev, current, next) ----
- * Scoped via :has() to tnavs whose third pill carries aria-current='page'
- * AND whose first pill links to a same-directory BOOK.htm (this book's
- * chapter list) — i.e. chapter pages (top + bottom). Book-TOC pages'
- * pills link to BOOKNN.htm chapter files and carry no aria-current, so
- * they DON'T match and stay on the flat base. The copyright page's single
- * "Index" pill also doesn't match (only 1 li, no aria-current) — it stays
- * a single flat link.
+/* ---- Chapter-page nav (3 pills: book name, prev, next) ----
+ * Scoped via :has() to tnavs on pages that have a .home-mark link — i.e.
+ * chapter pages (the bulk HTML edit injected a <a class="home-mark">
+ * before the top tnav of every chapter file). Book-TOC pages and the
+ * copyright page have no .home-mark, so they stay on the flat base.
  *
- * NOTE: the book-name pill (1st) now links to this book's chapter list
- * (BOOK.htm) and the current-chapter pill (3rd) links to ../index.html
- * (all books) — the labels match the destinations, so each pill is
- * self-explanatory. See swap-nav-hrefs.py for the bulk HTML edit that
- * performed this swap across the 1334 chapter files. */
-ul.tnav:has(> li:nth-child(3) > a[aria-current="page"]) {
+ * The current-chapter <li> was removed (it was redundant with the
+ * .chapterlabel subtitle and its destination was unintuitive). What
+ * remains: [Book name → BOOK.htm] [‹ Prev] [Next ›], reordered to
+ *   [‹ Prev]   [Book name]   [Next ›]
+ * The book-name pill links to this book's chapter list (its label matches
+ * its destination). The all-books index is reached via the .home-mark
+ * logo in the top-left corner (see below). */
+body:has(.home-mark) ul.tnav {
   flex-wrap: nowrap;
   justify-content: stretch;  /* mobile-first: prev flush left, next flush right
                               * (split bar — easy thumb reach to both ends).
                               * Desktop overrides to a centred cluster below. */
 }
-ul.tnav:has(> li:nth-child(3) > a[aria-current="page"]) > li:nth-child(1) { order: 2; } /* book name   → centre-left  */
-ul.tnav:has(> li:nth-child(3) > a[aria-current="page"]) > li:nth-child(2) { order: 1; flex: 1 1 0; } /* prev → far left, grows to fill */
-ul.tnav:has(> li:nth-child(3) > a[aria-current="page"]) > li:nth-child(3) { order: 3; } /* current     → centre-right */
-ul.tnav:has(> li:nth-child(3) > a[aria-current="page"]) > li:nth-child(4) { order: 4; flex: 1 1 0; } /* next → far right, grows to fill */
+body:has(.home-mark) ul.tnav > li:nth-child(1) { order: 2; } /* book name → centre */
+body:has(.home-mark) ul.tnav > li:nth-child(2) { order: 1; flex: 1 1 0; } /* prev → far left, grows */
+body:has(.home-mark) ul.tnav > li:nth-child(3) { order: 3; flex: 1 1 0; } /* next → far right, grows */
 
 /* Desktop (>= 601px): centred cluster — prev/next are a comfortable fixed
  * width instead of growing across the whole 720px reading column (which
  * made them oversized and lopsided). The whole row centres; the page's
  * own side padding provides the breathing room. */
 @media (min-width: 601px) {
-  ul.tnav:has(> li:nth-child(3) > a[aria-current="page"]) {
+  body:has(.home-mark) ul.tnav {
     justify-content: center;
     gap: 20px;
   }
-  ul.tnav:has(> li:nth-child(3) > a[aria-current="page"]) > li:nth-child(2),
-  ul.tnav:has(> li:nth-child(3) > a[aria-current="page"]) > li:nth-child(4) {
+  body:has(.home-mark) ul.tnav > li:nth-child(2),
+  body:has(.home-mark) ul.tnav > li:nth-child(3) {
     flex: 0 0 auto;
     min-width: 104px;   /* equal, predictable size regardless of book name */
   }
 }
 
 /* Flat pills — NO boxes by default. The layout (prev flush left, next flush
- * right, book name + current chapter clustered centred) carries the
- * affordance; the text sits on the page background so the bar reads as
- * quiet chrome, not as a row of buttons. Prev/next are muted so they
- * don't compete with the reading column. On hover/focus a quiet flat
- * surface (surface2 + pill radius, matching the index book-list hover)
- * appears — the affordance shows up only when you interact. */
-ul.tnav:has(> li:nth-child(3) > a[aria-current="page"]) > li > a {
+ * right, book name centred) carries the affordance; the text sits on the
+ * page background so the bar reads as quiet chrome, not as a row of
+ * buttons. Prev/next are muted so they don't compete with the reading
+ * column. On hover/focus a quiet flat surface (surface2 + pill radius,
+ * matching the index book-list hover) appears — the affordance shows up
+ * only when you interact. */
+body:has(.home-mark) ul.tnav > li > a {
   border-radius: var(--radius-pill);
   transition: background 120ms ease, color 120ms ease;
 }
-ul.tnav:has(> li:nth-child(3) > a[aria-current="page"]) > li > a:hover,
-ul.tnav:has(> li:nth-child(3) > a[aria-current="page"]) > li > a:focus-visible {
+body:has(.home-mark) ul.tnav > li > a:hover,
+body:has(.home-mark) ul.tnav > li > a:focus-visible {
   background: var(--surface2);
   color: var(--text-main);
 }
@@ -377,13 +375,13 @@ ul.tnav:has(> li:nth-child(3) > a[aria-current="page"]) > li > a:focus-visible {
  * instead — lighter, still a clear hover affordance. (Dark mode keeps
  * surface2 = #585b70, which is appropriately subtle on the dark base.) */
 @media (prefers-color-scheme: light) {
-  ul.tnav:has(> li:nth-child(3) > a[aria-current="page"]) > li > a:hover,
-  ul.tnav:has(> li:nth-child(3) > a[aria-current="page"]) > li > a:focus-visible {
+  body:has(.home-mark) ul.tnav > li > a:hover,
+  body:has(.home-mark) ul.tnav > li > a:focus-visible {
     background: var(--surface1);
   }
 }
-ul.tnav:has(> li:nth-child(3) > a[aria-current="page"]) > li:nth-child(2) > a,
-ul.tnav:has(> li:nth-child(3) > a[aria-current="page"]) > li:nth-child(4) > a {
+body:has(.home-mark) ul.tnav > li:nth-child(2) > a,
+body:has(.home-mark) ul.tnav > li:nth-child(3) > a {
   color: var(--tertiary);   /* overlay1 on dark = 4.44:1 — dimmest AA-passing
                               token, genuinely "barely noticeable". Prev/next
                               are always the same + their position (far
@@ -395,15 +393,15 @@ ul.tnav:has(> li:nth-child(3) > a[aria-current="page"]) > li:nth-child(4) > a {
  * dimmest acceptable token on the light page bg, so use it here instead —
  * still subtle (weight 400), just AA-respecting. */
 @media (prefers-color-scheme: light) {
-  ul.tnav:has(> li:nth-child(3) > a[aria-current="page"]) > li:nth-child(2) > a,
-  ul.tnav:has(> li:nth-child(3) > a[aria-current="page"]) > li:nth-child(4) > a {
+  body:has(.home-mark) ul.tnav > li:nth-child(2) > a,
+  body:has(.home-mark) ul.tnav > li:nth-child(3) > a {
     color: var(--subtext0);
   }
 }
-ul.tnav:has(> li:nth-child(3) > a[aria-current="page"]) > li:nth-child(2) > a:hover,
-ul.tnav:has(> li:nth-child(3) > a[aria-current="page"]) > li:nth-child(4) > a:hover,
-ul.tnav:has(> li:nth-child(3) > a[aria-current="page"]) > li:nth-child(2) > a:focus-visible,
-ul.tnav:has(> li:nth-child(3) > a[aria-current="page"]) > li:nth-child(4) > a:focus-visible {
+body:has(.home-mark) ul.tnav > li:nth-child(2) > a:hover,
+body:has(.home-mark) ul.tnav > li:nth-child(3) > a:hover,
+body:has(.home-mark) ul.tnav > li:nth-child(2) > a:focus-visible,
+body:has(.home-mark) ul.tnav > li:nth-child(3) > a:focus-visible {
   color: var(--text-main);
 }
 
@@ -411,36 +409,75 @@ ul.tnav:has(> li:nth-child(3) > a[aria-current="page"]) > li:nth-child(4) > a:fo
  * prev/next affordance is unambiguous (position + label), but keep it as
  * plain text — no chrome. The aria-labels (already on the links for SR
  * users) stay intact. */
-ul.tnav:has(> li:nth-child(3) > a[aria-current="page"]) > li > a[aria-label="Previous chapter"],
-ul.tnav:has(> li:nth-child(3) > a[aria-current="page"]) > li > a[aria-label="Next chapter"] {
+body:has(.home-mark) ul.tnav > li > a[aria-label="Previous chapter"],
+body:has(.home-mark) ul.tnav > li > a[aria-label="Next chapter"] {
   font-size: 0;       /* hide the literal "<" / ">" text */
   letter-spacing: 0;
 }
-ul.tnav:has(> li:nth-child(3) > a[aria-current="page"]) > li > a[aria-label="Previous chapter"]::before {
+body:has(.home-mark) ul.tnav > li > a[aria-label="Previous chapter"]::before {
   content: "‹ Prev";
   font-size: 0.85rem;
   letter-spacing: 0.01em;
   font-weight: 400;
 }
-ul.tnav:has(> li:nth-child(3) > a[aria-current="page"]) > li > a[aria-label="Next chapter"]::before {
+body:has(.home-mark) ul.tnav > li > a[aria-label="Next chapter"]::before {
   content: "Next ›";
   font-size: 0.85rem;
   letter-spacing: 0.01em;
   font-weight: 400;
 }
 
-/* The current chapter: just the number in the accent color + a little
- * weight. No box, no tinted background — the position (centre-right,
- * right after the book name) and the accent color mark "you are here".
- * Keep the accent on hover/focus so the "current" signal doesn't vanish
- * when you interact with the pill (only the surface appears). */
-ul.tnav:has(> li:nth-child(3) > a[aria-current="page"]) > li:nth-child(3) > a {
-  color: var(--accent);
-  font-weight: 600;
+/* ---------- Home mark (top-left corner link to the all-books index) ----------
+ * A subtle ✦ in the accent color, pinned to the top-left corner of the
+ * viewport on chapter pages only (injected before the top tnav). It's the
+ * "home" affordance — clicking it goes to the index. Quiet by default;
+ * brightens on hover/focus. position: fixed so it stays put while
+ * scrolling (always-available home), and so it doesn't collide with the
+ * in-flow top tnav. The skip-link (also top-left, hidden until focused)
+ * sits at z-index 100 and slides in at top:0 on focus — the home-mark is
+ * at top:8 left:8 and the skip-link covers a wider band, so they don't
+ * visually clash; on the rare focus of the skip-link it sits above the
+ * home-mark (higher z-index) which is fine. */
+.home-mark {
+  position: fixed;
+  top: 8px;
+  left: 12px;
+  z-index: 50;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  text-decoration: none;
+  font-size: 1.1rem;
+  line-height: 1;
+  color: var(--overlay1);   /* dim by default — subtle, not a loud logo */
+  border-radius: var(--radius-pill);
+  transition: color 120ms ease, background 120ms ease;
 }
-ul.tnav:has(> li:nth-child(3) > a[aria-current="page"]) > li:nth-child(3) > a:hover,
-ul.tnav:has(> li:nth-child(3) > a[aria-current="page"]) > li:nth-child(3) > a:focus-visible {
+.home-mark:hover,
+.home-mark:focus-visible {
   color: var(--accent);
+  background: var(--surface2);
+  outline: none;
+}
+@media (prefers-color-scheme: light) {
+  .home-mark { color: var(--subtext0); }   /* AA-respecting on light bg */
+  .home-mark:hover,
+  .home-mark:focus-visible { background: var(--surface1); }
+}
+/* On mobile the home-mark sits in the 3mm side-margin zone; nudge it in
+ * slightly so it clears the screen edge with the same clearance as the
+ * nav pills. */
+@media (max-width: 600px) {
+  .home-mark { left: 3mm; top: 6px; }
+}
+/* The fixed home-mark (32px tall, top:6-8px) overlaps the in-flow top
+ * tnav on chapter pages — push the FIRST tnav down enough to clear it.
+ * Only the first tnav needs this (the bottom tnav is far below). Scope via
+ * body:has(.home-mark) so book-TOC/copyright pages are unaffected. */
+body:has(.home-mark) ul.tnav:first-of-type {
+  margin-top: 44px;
 }
 
 /* ---------- Book-list links (index page) ---------- */
@@ -639,17 +676,16 @@ body.chlist ul.tnav a, body.chlist ul.tnav a:link {
   /* Top / bottom chapter-nav rows on chapter pages (body > ul.tnav):
    *   - 3mm side clearance so the grown prev/next buttons sit 3mm from the
    *     screen edge (easy thumb reach, never touching the edge).
-   *   - A little extra top breathing room so the top nav isn't glued to the
-   *     top of the viewport (the original flat row sat at ~12px from the
-   *     screen edge — too tight to tap comfortably).
-   * The bottom gap is handled globally via body padding-bottom + the
-   * last-of-type margin-zero rule (see base styles) — margin collapse would
-   * otherwise eat the last nav's margin-bottom. */
+   *   - Extra top margin so the FIRST tnav clears the fixed home-mark logo
+   *     in the top-left corner (32px tall at top:6px → bottom ~38px). The
+   *     bottom tnav keeps the default gap (handled by body padding-bottom +
+   *     the last-of-type margin-zero rule in base styles — margin collapse
+   *     would otherwise eat the last nav's margin-bottom). */
   body > ul.tnav {
     padding-left: 3mm;
     padding-right: 3mm;
-    margin-top: 24px;
   }
+  body:has(.home-mark) ul.tnav:first-of-type { margin-top: 44px; }
 
   /* Index page: book list goes full-bleed; link text 3mm from each edge.
    *   - h1 sits directly in #main (no .main card), so it needs its own 3mm.
