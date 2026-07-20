@@ -573,8 +573,10 @@ main#main > div > ul li a.nn {
 main#main > div > ul li a.oo:hover,
 main#main > div > ul li a.aa:hover,
 main#main > div > ul li a.nn:hover {
-  background: var(--surface2);
   color: var(--text-main);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
 }
 main#main > div > ul li a.oo:visited,
 main#main > div > ul li a.aa:visited,
