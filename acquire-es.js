@@ -434,6 +434,21 @@ function normalizeText(s) {
   s = s.replace(/\bvoso tros\b/g, 'vosotros');
   s = s.replace(/\bnues tro\b/g, 'nuestro');
 
+  // --- Etymological accents on single-letter words (19th-c. convention,
+  //     all dropped in modern RAE Spanish). Safe because no modern Spanish
+  //     word is a single accented letter; standalone context guarantees
+  //     these are prepositions/conjunctions.
+  //     á (preposition) -> a,  ó (conjunction "or") -> o,
+  //     é (conjunction "and" before i-sounds) -> e,
+  //     ú (conjunction "or" before o-sounds) -> u.
+  s = wbReplace(s, 'á', 'a');
+  s = wbReplace(s, 'ó', 'o');
+  s = wbReplace(s, 'é', 'e');
+  s = wbReplace(s, 'ú', 'u');
+  s = wbReplace(s, 'Á', 'A');
+  s = wbReplace(s, 'É', 'E');
+  s = wbReplace(s, 'Ó', 'O');
+
   // --- Tier 1: Universal mechanical (order matters — do compounds first) ---
   s = s.replace(/Jesu-Christo/g, 'Jesucristo');
   s = s.replace(/JesuChristo/g, 'Jesucristo');   // model sometimes drops the hyphen
