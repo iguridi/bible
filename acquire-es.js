@@ -358,6 +358,7 @@ function parsePageVerses(wt) {
   }
   for (const v of verses) {
     v.text = cleanWikiText(v.text);
+    v.text = normalizeText(v.text);
   }
   return verses;
 }
@@ -398,6 +399,88 @@ function cleanWikiText(s) {
   // Collapse whitespace but keep verse-internal spacing sane.
   s = s.replace(/[ \t]+/g, ' ').replace(/ *\n */g, ' ').replace(/\s+$/g, '').replace(/^\s+/, '');
   return s.trim();
+}
+
+// ---------------------------------------------------------------------------
+// Spelling modernization (option C: keep archaic vocabulary/syntax, normalize
+// spelling to modern RAE conventions). Applied at build time so the raw
+// vision/Wikisource files stay as-is (reversible). Every rule is documented
+// in ~/memory/2026-07-19-bible-pwa-spanish-normalization-ruleset.md.
+// ---------------------------------------------------------------------------
+
+// Word-boundary replacement that works with Spanish accented chars.
+// \b in JS regex is ASCII-only, so we use explicit lookarounds.
+function wbReplace(s, word, replacement) {
+  // Boundary = start-of-string or a non-letter char before; similarly after.
+  const re = new RegExp(
+    '(^|[^A-Za-z\u00C0-\u017F])' +
+    word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') +
+    '([^A-Za-z\u00C0-\u017F]|$)',
+    'g'
+  );
+  return s.replace(re, (_m, pre, post) => pre + replacement + post);
+}
+
+function normalizeText(s) {
+  // --- Bug fixes (not modernization — these are unambiguous OCR artifacts) ---
+
+  // 1. Hyphenated line-breaks: 'acom- pañado' -> 'acompañado'.
+  //    (A lowercase letter, hyphen, space, lowercase letter. Safe because
+  //    'Jesu-Christo' has NO space after the hyphen and won't match.)
+  s = s.replace(/([a-z\u00E1\u00E9\u00ED\u00F3\u00FA\u00F1])- ([a-z\u00E1\u00E9\u00ED\u00F3\u00FA\u00F1])/g, '$1$2');
+
+  // 2. Cross-page word splits (no hyphen): 'voso tros' -> 'vosotros'.
+  //    Only two known cases in the NT; the OT will be audited after OCR.
+  s = s.replace(/\bvoso tros\b/g, 'vosotros');
+  s = s.replace(/\bnues tro\b/g, 'nuestro');
+
+  // --- Tier 1: Universal mechanical (order matters — do compounds first) ---
+  s = s.replace(/Jesu-Christo/g, 'Jesucristo');
+  s = s.replace(/Christo-Jesus/g, 'Cristo-Jesús');
+  s = wbReplace(s, 'Christo', 'Cristo');
+
+  // --- Tier 2: Closed-set word replacements (proper nouns + common words) ---
+  const tier2 = {
+    'Jesus': 'Jesús', 'Moyses': 'Moisés', 'Sion': 'Sión',
+    'Jose': 'José', 'Maria': 'María', 'dia': 'día',
+    'tambien': 'también', 'estais': 'estáis', 'todavia': 'todavía',
+    'leida': 'leída',
+  };
+  for (const [from, to] of Object.entries(tier2)) {
+    s = wbReplace(s, from, to);
+  }
+
+  // --- Tier 3: Verb form accent restoration (curated — only true verb forms) ---
+  const tier3 = {
+    // -ia (imperfect/conditional 3rd sg)
+    'habia': 'había', 'decia': 'decía', 'tenia': 'tenía', 'hacia': 'hacía',
+    'debia': 'debía', 'sabia': 'sabía', 'seria': 'sería', 'podia': 'podía',
+    'venia': 'venía', 'queria': 'quería',
+    // -ian (imperfect/conditional 3rd pl)
+    'habian': 'habían', 'decian': 'decían', 'tenian': 'tenían', 'hacian': 'hacían',
+    'podian': 'podían', 'venian': 'venían', 'ponian': 'ponían', 'vivian': 'vivían',
+    'salian': 'salían', 'sabian': 'sabían', 'vendian': 'vendían', 'creian': 'creían',
+    'temian': 'temían', 'reñian': 'reñían', 'anuncian': 'anuncían', 'querian': 'querían',
+    'respondian': 'respondían', 'seguian': 'seguían', 'discurrian': 'discurrían',
+    'bebian': 'bebían', 'calumnian': 'calumnían', 'traian': 'traían', 'debian': 'debían',
+    'parecian': 'parecían', 'habrian': 'habrían', 'acudian': 'acudían',
+    'podrian': 'podrían', 'pedian': 'pedían', 'perseguian': 'perseguían',
+    'desprecian': 'desprecían', 'cabian': 'cabían', 'herian': 'herían',
+    'ofrecian': 'ofrecían', 'plañian': 'plañían', 'servian': 'servían',
+    'tendian': 'tendían', 'tendrian': 'tendrían', 'vestian': 'vestían',
+    'volvian': 'volvían',
+    // -eis (2nd pl present)
+    'teneis': 'tenéis', 'habeis': 'habéis',
+  };
+  for (const [from, to] of Object.entries(tier3)) {
+    s = wbReplace(s, from, to);
+  }
+
+  // --- Tier 4: -cion -> -ción (universal modern Spanish rule) ---
+  s = s.replace(/([a-z])cion\b/g, '$1ción');
+  s = s.replace(/([a-z])cion([\s.,;:!?)])/g, '$1ción$2');
+
+  return s;
 }
 
 // ---------------------------------------------------------------------------
