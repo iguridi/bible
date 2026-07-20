@@ -185,20 +185,6 @@ h2 {
 }
 
 /* ---------- Chapter heading ---------- */
-.chapterlabel {
-  text-align: center;
-  margin: 28px 0 32px;
-  padding-bottom: 16px;
-  font-family: var(--ui-font);
-  font-size: 0.9rem;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--subtext1);
-  border-bottom: 1px solid var(--border);
-}
-.chapterlabel:first-child { margin-top: 12px; }
-.chapterlabel::before { content: "Chapter "; color: var(--subtext0); }
 
 /* ---------- Verses: one paragraph per verse ----------
  * Structure: <div class="p"><span class="verse" id="V1">1 </span>text...
