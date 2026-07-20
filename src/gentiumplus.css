@@ -426,6 +426,19 @@ body:has(.home-mark) > ul.tnav > li > a[aria-label="Next chapter"]::before {
   line-height: 1;
 }
 
+/* Chapter pages: the book name (.mt div) repeats the nav bar above ("Book N").
+ * Make it subtler: left-aligned with the text column and ☰ icon, compact
+ * vertical space, lighter weight. The negative margin pulls it past main's
+ * left padding so it sits on the same vertical line as the body content. */
+body:has(.home-mark) > main .mt {
+  text-align: left;
+  margin: 4px 0 2px;
+  margin-left: -28px;
+  font-weight: 500;
+  font-size: 1.25rem;
+  color: var(--subtext0);
+}
+
 /* ---------- Home mark (top-left corner link to the all-books index) ----------
  * A subtle ☰ (list/contents glyph — the universal 'index' affordance) that
  * links straight to the all-books index. Quiet by default; brightens to
@@ -687,6 +700,10 @@ body > .home-mark + main.main {
     border-right: none;
     border-radius: 0;
     box-shadow: none;
+  }
+  /* Chapter-page .mt: pull past main's 3mm left padding to align with ☰. */
+  body:has(.home-mark) > main .mt {
+    margin-left: -3mm;
   }
 
   /* Top / bottom chapter-nav rows on chapter pages (body > ul.tnav):
