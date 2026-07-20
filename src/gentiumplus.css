@@ -685,6 +685,15 @@ body > main ul.tnav {
 body > main ul.tnav a, body > main ul.tnav a:link {
   min-width: 2.4em; text-align: center;
 }
+/* Chapter index pages: the ☰ home-mark is at top:0 but there's no top
+ * tnav to align with. Remove main's top margin/padding so the h1 sits
+ * on the same band as the home-mark. Selector only matches when main
+ * immediately follows .home-mark (chapter index pages); on chapter pages
+ * the tnav sits between them so this doesn't apply. */
+body > .home-mark + main.main {
+  margin-top: 0;
+  padding-top: 0;
+}
 
 /* ---------- Mobile: <=3mm side margin, full-bleed reading surface ----------
  * On phones the desktop card-in-a-card side padding (16px body + 28px
