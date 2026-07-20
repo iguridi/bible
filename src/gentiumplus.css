@@ -429,23 +429,26 @@ body:has(.home-mark) > ul.tnav > li > a[aria-label="Next chapter"]::before {
 /* Chapter pages: the subtitle (.mt2, .mt3) and book name (.mt) are three
  * stacked divs that read as one phrase: "The First Book of Moses, Commonly
  * Called Genesis". Make them inline so they flow as a single left-aligned
- * line, same vertical position as the ☰ icon and text column. */
+ * line, aligned with the text content (inside main's padding). */
 body:has(.home-mark) > main .mt2,
 body:has(.home-mark) > main .mt3,
 body:has(.home-mark) > main .mt {
   display: inline;
-  font-size: 1rem;
-  font-weight: 500;
-  color: var(--subtext0);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-main);
   text-align: left;
   margin: 0;
   padding: 0;
   letter-spacing: normal;
   text-transform: none;
 }
-/* Pull the first inline element past main's left padding to align with ☰. */
+/* Vertical spacing around the title phrase. */
 body:has(.home-mark) > main .mt2 {
-  margin-left: -28px;
+  margin-top: 16px;
+}
+body:has(.home-mark) > main .mt {
+  margin-bottom: 12px;
 }
 
 /* ---------- Home mark (top-left corner link to the all-books index) ----------
@@ -710,10 +713,7 @@ body > .home-mark + main.main {
     border-radius: 0;
     box-shadow: none;
   }
-  /* Chapter-page .mt2: pull past main's 3mm left padding to align with ☰. */
-  body:has(.home-mark) > main .mt2 {
-    margin-left: -3mm;
-  }
+
 
   /* Top / bottom chapter-nav rows on chapter pages (body > ul.tnav):
    *   - 3mm side clearance (for book-TOC chapter grids, which are in-flow;
