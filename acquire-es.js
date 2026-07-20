@@ -436,6 +436,8 @@ function normalizeText(s) {
 
   // --- Tier 1: Universal mechanical (order matters — do compounds first) ---
   s = s.replace(/Jesu-Christo/g, 'Jesucristo');
+  s = s.replace(/JesuChristo/g, 'Jesucristo');   // model sometimes drops the hyphen
+  s = s.replace(/Jesuchristo/g, 'Jesucristo');   // all-lowercase variant
   s = s.replace(/Christo-Jesus/g, 'Cristo-Jesús');
   s = wbReplace(s, 'Christo', 'Cristo');
 
@@ -899,6 +901,9 @@ async function runBuild(args) {
           } else {
             chapters[v.chapter][v.verse] = v.text;
           }
+          // Re-normalize after join to catch cross-page artifacts
+          // (hyphen-breaks and word splits that span page boundaries).
+          chapters[v.chapter][v.verse] = normalizeText(chapters[v.chapter][v.verse]);
         }
       }
     }

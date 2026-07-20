@@ -241,49 +241,26 @@ ul.tnav {
 }
 
 /* ---- Chapter-page nav (3 pills: book name, prev, next) ----
- * Scoped via :has() to tnavs on pages that have a .home-mark link — i.e.
- * chapter pages (the bulk HTML edit injected a <a class="home-mark">
- * before the top tnav of every chapter file). Book-TOC pages and the
- * copyright page have no .home-mark, so they stay on the flat base.
- *
- * The current-chapter <li> was removed (it was redundant with the
- * .chapterlabel subtitle and its destination was unintuitive). What
- * remains: [Book name → BOOK.htm] [‹ Prev] [Next ›], reordered to
- *   [‹ Prev]   [Book name]   [Next ›]
- * The book-name pill links to this book's chapter list (its label matches
- * its destination). The all-books index is reached via the .home-mark
- * logo in the top-left corner (see below). */
-/* ---- Chapter-page nav (3 pills: book name, prev, next) ----
- * Layout: the book name is CENTRED in the reading column; prev + next are
- * grouped as a compact ‹ › pair at the RIGHT edge of the text content.
- * (The ☰ home-mark sits at the left edge — so the top bar reads as a
- * symmetric ☰ ... [book name] ... ‹ ›.)
- *
- * prev+next are taken OUT of flow (absolute) so the book name can be truly
- * centred in the column (not just centred in the leftover space). They're
- * compact chevron-only pills (44px hit area) so the pair fits in the small
- * space at the right of the book name even on mobile. The aria-labels
- * (already on the links for SR users) carry the semantics; the chevron
- * direction + right-edge position carry the visual affordance.
- *
- * Scoped via body:has(.home-mark) — chapter pages only. Book-TOC pages and
- * the copyright page have no .home-mark, so they stay on the flat base. */
-body:has(.home-mark) > ul.tnav {
-  display: flex;
-  flex-wrap: nowrap;
-  justify-content: center;  /* book name centred in the reading column */
+ * Layout: CSS grid. Book name spans all columns + justify-self:center for
+ * true centering. Prev + next in auto-width columns at the right edge.
+ * No absolute positioning — the grid handles it natively. */
+body.chapter-page > ul.tnav {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  column-gap: 4px;
   align-items: center;
-  position: relative;       /* anchor for the absolute prev/next pair */
 }
-body:has(.home-mark) > ul.tnav > li:nth-child(1) {  /* book name — in flow, centred */
-  flex: 0 0 auto;
+body.chapter-page > ul.tnav > li:nth-child(1) {  /* book name — spans all cols, centred */
+  grid-column: 1 / -1;
+  grid-row: 1;
+  justify-self: center;
 }
 /* The book-name text (0.85rem) sits in a 48px pill with align-items:center,
  * but its shorter cap height + descender area leave the VISUAL centre a
  * touch above the ‹ › chevrons (which are 1.15rem and fill their line-box).
  * Nudge the book-name pill down ~2px so its ink visually aligns with the
  * chevrons. (The pill itself stays 48px; this just shifts the ink down.) */
-body:has(.home-mark) > ul.tnav > li:nth-child(1) > a {
+body.chapter-page > ul.tnav > li:nth-child(1) > a {
   padding-top: 15px;  /* base is 11px; +4px nudge pushes the text DOWN so
                           its visual centre aligns with the ‹ › chevrons.
                           The book-name text (0.85rem) has a descender area
@@ -292,21 +269,14 @@ body:has(.home-mark) > ul.tnav > li:nth-child(1) > a {
                           chevrons even when both are flex-centred in 48px
                           pills. +4px brings the ink level with the chevrons. */
 }
-/* prev + next: compact chevron pills pinned to the right edge as a pair.
- * next at right:0; prev at right: <next width + gap>. Each pill is 44px
- * (min-width below) so the offset is predictable. top:50% + translateY
- * centres them vertically on the book name's band. */
-body:has(.home-mark) > ul.tnav > li:nth-child(2) {  /* prev */
-  position: absolute;
-  right: 48px;        /* next (44) + 4px gap */
-  top: 50%;
-  transform: translateY(-50%);
+/* prev + next: compact chevron pills in auto-width grid columns at the right edge. */
+body.chapter-page > ul.tnav > li:nth-child(2) {  /* prev */
+  grid-column: 2;
+  grid-row: 1;
 }
-body:has(.home-mark) > ul.tnav > li:nth-child(3) {  /* next */
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
+body.chapter-page > ul.tnav > li:nth-child(3) {  /* next */
+  grid-column: 3;
+  grid-row: 1;
 }
 
 /* Flat pills — NO boxes by default. The layout (prev flush left, next flush
@@ -316,29 +286,29 @@ body:has(.home-mark) > ul.tnav > li:nth-child(3) {  /* next */
  * column. On hover/focus a quiet flat surface (surface2 + pill radius,
  * matching the index book-list hover) appears — the affordance shows up
  * only when you interact. */
-body:has(.home-mark) > ul.tnav > li > a {
+body.chapter-page > ul.tnav > li > a {
   border-radius: var(--radius-pill);
   transition: background 120ms ease, color 120ms ease;
 }
-body:has(.home-mark) > ul.tnav > li > a:hover,
-body:has(.home-mark) > ul.tnav > li > a:focus-visible {
+body.chapter-page > ul.tnav > li > a:hover,
+body.chapter-page > ul.tnav > li > a:focus-visible {
   color: var(--text-main);
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 3px;
 }
-body:has(.home-mark) > ul.tnav > li:nth-child(2) > a,
-body:has(.home-mark) > ul.tnav > li:nth-child(3) > a {
+body.chapter-page > ul.tnav > li:nth-child(2) > a,
+body.chapter-page > ul.tnav > li:nth-child(3) > a {
   color: var(--tertiary);   /* overlay1 on dark = 4.44:1 — dimmest AA-passing
                               token, genuinely "barely noticeable". Prev/next
                               are always the same + their position (far
                               left/right) conveys the affordance, so the text
                               is intentionally quiet; brightens on hover/focus. */
 }
-body:has(.home-mark) > ul.tnav > li:nth-child(2) > a:hover,
-body:has(.home-mark) > ul.tnav > li:nth-child(3) > a:hover,
-body:has(.home-mark) > ul.tnav > li:nth-child(2) > a:focus-visible,
-body:has(.home-mark) > ul.tnav > li:nth-child(3) > a:focus-visible {
+body.chapter-page > ul.tnav > li:nth-child(2) > a:hover,
+body.chapter-page > ul.tnav > li:nth-child(3) > a:hover,
+body.chapter-page > ul.tnav > li:nth-child(2) > a:focus-visible,
+body.chapter-page > ul.tnav > li:nth-child(3) > a:focus-visible {
   color: var(--text-main);
   text-decoration: underline;
   text-decoration-thickness: 1px;
@@ -350,20 +320,20 @@ body:has(.home-mark) > ul.tnav > li:nth-child(3) > a:focus-visible {
  * is grouped at the right edge and the chevron direction carries the
  * affordance, so the words are dropped for compactness (fits the small
  * space at the right of the book name on mobile). aria-labels stay for SR. */
-body:has(.home-mark) > ul.tnav > li > a[aria-label="Previous chapter"],
-body:has(.home-mark) > ul.tnav > li > a[aria-label="Next chapter"] {
+body.chapter-page > ul.tnav > li > a[aria-label="Previous chapter"],
+body.chapter-page > ul.tnav > li > a[aria-label="Next chapter"] {
   font-size: 0;       /* hide the literal "<" / ">" text */
   letter-spacing: 0;
   min-width: 44px;    /* predictable 44px hit area; also makes the absolute
                          prev offset (right:48px = next 44 + 4 gap) stable. */
 }
-body:has(.home-mark) > ul.tnav > li > a[aria-label="Previous chapter"]::before {
+body.chapter-page > ul.tnav > li > a[aria-label="Previous chapter"]::before {
   content: "‹";
   font-size: 1.15rem;
   font-weight: 500;
   line-height: 1;
 }
-body:has(.home-mark) > ul.tnav > li > a[aria-label="Next chapter"]::before {
+body.chapter-page > ul.tnav > li > a[aria-label="Next chapter"]::before {
   content: "›";
   font-size: 1.15rem;
   font-weight: 500;
@@ -377,40 +347,24 @@ body:has(.home-mark) > ul.tnav > li > a[aria-label="Next chapter"]::before {
  * for air, muted color (less contrasting than body text), and small gaps
  * between title lines. The large space before the text body is handled
  * by margin-top on the first .p element below. */
-body:has(.home-mark) > main .mt2,
-body:has(.home-mark) > main .mt3,
-body:has(.home-mark) > main .mt {
+body.chapter-page > main .mt,
+body.chapter-page > main .mt2,
+body.chapter-page > main .mt3 {
   display: inline-block;
   font-size: 1.4rem;
   font-weight: 400;
   font-family: "Gentium Plus", Georgia, serif;
   color: var(--lavender);
   text-align: left;
-  margin: 0;
+  margin: 0 0.25em 20px 0;  /* right: gap between title words; bottom: space before text */
   padding: 0;
   letter-spacing: 0.02em;
   text-transform: none;
 }
 /* Top margin on the first title element. */
-body:has(.home-mark) > main .mt2 {
+body.chapter-page > main .mt2,
+body.chapter-page > main .mt:first-of-type {
   margin-top: 16px;
-}
-body:has(.home-mark) > main .mt:first-of-type {
-  margin-top: 16px;
-}
-/* Inline-block doesn't preserve whitespace between elements, so add
- * a small right margin to create the gap between words. */
-body:has(.home-mark) > main .mt,
-body:has(.home-mark) > main .mt2,
-body:has(.home-mark) > main .mt3 {
-  margin-right: 0.25em;
-}
-/* Space after each title line. Using a consistent value since
- * :has(+ .p) selector isn't reliably supported. */
-body:has(.home-mark) > main .mt,
-body:has(.home-mark) > main .mt2,
-body:has(.home-mark) > main .mt3 {
-  margin-bottom: 20px;
 }
 
 /* ---------- Home mark (top-left corner link to the all-books index) ----------
@@ -664,7 +618,8 @@ body > .home-mark + main.main {
 
   /* Top / bottom chapter-nav rows on chapter pages (body > ul.tnav):
    *   - 3mm side clearance (for book-TOC chapter grids, which are in-flow;
-   *     chapter-page prev/next are absolute and get their own inset below).
+   *     chapter-page prev/next are in auto-width grid columns, inset by
+   *     this padding automatically).
    *   - The ☰ home-mark is at the LEFT edge on the same band, but the book
    *     name is centred (not flush left), so there's no overlap to clear.
    *   - The bottom tnav's gap is handled by body padding-bottom + the
@@ -673,12 +628,6 @@ body > .home-mark + main.main {
     padding-left: 3mm;
     padding-right: 3mm;
   }
-  /* Chapter-page prev/next are absolutely positioned (right:0 / right:48px
-   * in the base rule), which on a full-bleed mobile ul would put them at
-   * the screen edge. Inset them 3mm so they align with the text content's
-   * right edge. */
-  body:has(.home-mark) > ul.tnav > li:nth-child(3) { right: 3mm; }
-  body:has(.home-mark) > ul.tnav > li:nth-child(2) { right: calc(3mm + 48px); }
   /* The book-name pill is centred in the full column, but on a narrow phone
    * the longest names ("Wisdom of Solomon", 17 chars) would collide with
    * the ‹ › pair pinned at the right. Shrink the book-name pill on mobile:
@@ -689,7 +638,7 @@ body > .home-mark + main.main {
    * max-width must be <= (100vw - 2*100px - buffer). On a 390px phone that's
    * ~174px — "Wisdom of Solomon" (136px at 0.78rem) fits untruncated; on a
    * 320px phone it truncates to "Wisdom of…" rather than overlapping. */
-  body:has(.home-mark) > ul.tnav > li:nth-child(1) > a {
+  body.chapter-page > ul.tnav > li:nth-child(1) > a {
     display: block;      /* text-overflow:ellipsis needs a block box, not the
                            base inline-flex — switch so the truncation
                            shows a proper "…" instead of a hard clip. */
