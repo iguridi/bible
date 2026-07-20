@@ -680,6 +680,7 @@ body > main ul.tnav {
   padding: 0;
   box-shadow: none;
   display: block;
+  text-align: center;
 }
 body > main ul.tnav a, body > main ul.tnav a:link {
   min-width: 2.4em; text-align: center;
